@@ -19,8 +19,8 @@ getValue1 = () => {
 const calculations = (input) => {
     const output2 = +(input * RESISTANCE_ONE).toFixed(2);
     const output3 = +(input * RESISTANCE_TWO).toFixed(2);
-    const output4 = +(input + output2 / 4).toFixed(2);
-    const output5 = +(input + output3 / 4).toFixed(2);
+    const output4 = +((input + output2) / 4).toFixed(2);
+    const output5 = +((input + output3) / 4).toFixed(2);
     const outputs = [output2, output3, output4, output5];
 
     updateValues(outputs);
