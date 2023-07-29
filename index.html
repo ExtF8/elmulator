@@ -7,15 +7,45 @@
             http-equiv="Content-Security-Policy"
             content="default-src 'self'; script-src 'self'"
         />
-        <title>Hello World!</title>
+        <title>Elmulator</title>
+        <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-        <h1>Hello World!</h1>
-        We are using Node.js <span id="node-version"></span>, Chromium
-        <span id="chrome-version"></span>, and Electron
-        <span id="electron-version"></span>.
+        <header>
+            <h1>Elmulator</h1>
+            <p>For the Rings that need to be lorded</p>
+        </header>
+        <main>
+            <div class="container">
+                <!-- input -->
+                <div class="input_one">
+                    <input
+                        type="number"
+                        id="input1"
+                        placeholder="input the number"
+                        size="50"
+                    />
+                </div>
+                <div class="output">
+                    <!-- output 2 and 3 -->
+                    <div class="output_two_three">
+                        <p>Output 2</p>
+                        <input type="number" id="input2" readonly />
+                        <p>Output 3</p>
+                        <input type="number" id="input3" readonly />
+                    </div>
 
-        <!-- You can also require other files to run in this process -->
-        <!-- <script src="./renderer.js"></script> -->
+                    <!-- output 4 and 5 -->
+                    <div class="output_fore_five">
+                        <p>Output 4</p>
+                        <input type="number" id="input4" readonly />
+                        <p>Output 5</p>
+                        <input type="number" id="input5" readonly />
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- <script src="./calculator.js"></script> -->
+        <footer>Created by ExtF8</footer>
     </body>
 </html>
