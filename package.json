@@ -1,0 +1,14 @@
+{
+  "name": "elmulator",
+  "version": "1.0.0",
+  "description": "calculator for Elmar",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "ExtF8",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^25.3.2"
+  }
+}
