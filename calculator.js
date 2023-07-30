@@ -12,15 +12,15 @@ inputNumberValue.addEventListener('input', (e) => {
     calculations(input);
 });
 
-const getValue1 = () => {
+getValue1 = () => {
     return Number(inputNumberValue.value);
 };
 
 const calculations = (input) => {
-    const output2 = +(input * RESISTANCE_ONE).toFixed(2);
-    const output3 = +(input * RESISTANCE_TWO).toFixed(2);
-    const output4 = +((input + output2) / 4).toFixed(2);
-    const output5 = +((input + output3) / 4).toFixed(2);
+    const output2 = Number(+(input * RESISTANCE_ONE)).toFixed(2);
+    const output3 = Number(+(input * RESISTANCE_TWO)).toFixed(2);
+    const output4 = Number(+((input + Number(output2)) / 4)).toFixed(2);
+    const output5 = Number(+((input + Number(output3)) / 4)).toFixed(2);
     const outputs = [output2, output3, output4, output5];
 
     updateValues(outputs);
