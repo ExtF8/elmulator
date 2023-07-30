@@ -7,12 +7,12 @@ let outputFiveValue = document.getElementById('input5');
 const RESISTANCE_ONE = 1.67;
 const RESISTANCE_TWO = 2.67;
 
-inputNumberValue.addEventListener('change', (e) => {
+inputNumberValue.addEventListener('input', (e) => {
     let input = getValue1();
     calculations(input);
 });
 
-getValue1 = () => {
+const getValue1 = () => {
     return Number(inputNumberValue.value);
 };
 
