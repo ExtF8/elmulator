@@ -7,7 +7,6 @@
     padding: 0;
 }
 
-/* footer support */
 html {
     position: relative;
     min-height: 100%;
@@ -15,7 +14,6 @@ html {
 
 body {
     text-align: center;
-    /* margin-bottom: 100px; */
     background-color: #E6E6E6;
 }
 
@@ -24,7 +22,7 @@ header {
 }
 
 h1 {
-    font-size: 52px;
+    font-size: 32px;
 }
 
 
@@ -82,7 +80,6 @@ input {
     width: 70px;
     height: 30px;
     text-align: center;
-    /* font-size: large; */
 }
 
 #input1 {
@@ -92,5 +89,4 @@ input {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     display: none;
-
 }
