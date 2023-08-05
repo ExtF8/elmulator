@@ -19,8 +19,8 @@ const getInputValue = () => {
 const calculations = (inputValue) => {
     const outputTwo = (inputValue * RESISTANCE_ONE).toFixed(2);
     const outputThree = (inputValue * RESISTANCE_TWO).toFixed(2);
-    const outputFour = (inputValue + Number(outputTwo) / 4).toFixed(2);
-    const outputFive = (inputValue + Number(outputThree) / 4).toFixed(2);
+    const outputFour = ((inputValue + Number(outputTwo)) / 4).toFixed(2);
+    const outputFive = ((inputValue + Number(outputThree)) / 4).toFixed(2);
 
     const outputs = [outputTwo, outputThree, outputFour, outputFive];
 
