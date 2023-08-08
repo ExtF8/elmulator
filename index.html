@@ -9,7 +9,8 @@
         />
         <title>Elmulator</title>
         <link rel="stylesheet" href="style.css" />
-        <script src="./resistanceCalculator.js" defer></script>
+        <link rel="stylesheet" href="./stylesPages/rings.css" />
+        <script src="./renderer.js" defer></script>
     </head>
     <body>
         <header>
@@ -17,35 +18,28 @@
             <h6>For the Rings that need to be Lorded</h6>
         </header>
         <main>
-            <div class="container">
-                <!-- input -->
-                <div class="input_one">
-                    <p id="input_title">Input</p>
-                    <input
-                        type="number"
-                        id="input1"
-                        placeholder="input the number"
-                        size="50"
-                    />
-                </div>
-                <div class="output_container">
-                    <!-- output 2 and 3 -->
-                    <div class="outputs">
-                        <p>x1.67 r2</p>
-                        <input type="number" id="input2" readonly />
-                        <p>x2.67 r2</p>
-                        <input type="number" id="input3" readonly />
-                    </div>
+            <nav id="pagesBtnContainer">
+                <button
+                    data-load-page="./pages/rings.html"
+                    class="button button5"
+                >
+                    Rings
+                </button>
+                <button
+                    data-load-page="./pages/externalImpedance.html"
+                    class="button button5"
+                >
+                    Ze
+                </button>
+                <button
+                    data-load-page="./pages/circuitsCount.html"
+                    class="button button5"
+                >
+                    cct
+                </button>
+            </nav>
 
-                    <!-- output 4 and 5 -->
-                    <div class="outputs">
-                        <p>R1+R2</p>
-                        <input type="number" id="input4" readonly />
-                        <p>R1+R2</p>
-                        <input type="number" id="input5" readonly />
-                    </div>
-                </div>
-            </div>
+            <div id="pageContainer"></div>
         </main>
         <footer>Created by ExtF8</footer>
     </body>
