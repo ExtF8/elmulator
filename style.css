@@ -30,63 +30,63 @@ p {
     font-size: 16px;
 }
 
-.container {
+#pagesBtnContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 10px auto;
+    width: 100%;
+    height: 30px;
+    /* border: 1px solid green; */
+
+}
+
+.button {
+    border: none;
+    color: white;
+    width: 80px;
+    height: 30px;
+    padding: 6px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    /* margin: 50px 20px; */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 4%;
+}
+
+.button5 {
+    background-color: white;
+    color: black;
+    /* border: 2px solid #014b70; */
+}
+
+.button5:hover {
+    background-color: #014b70;
+    color: white;
+}
+
+.button5:s
+
+#pageContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
-}
-
-#input_title {
-    font-size: 30px;
-}
-
-.input_one {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px;
-}
-
-.output_container {
-    display: flex;
-    flex-direction: row;
-    padding: 10px;
-}
-
-.outputs {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px;
+    /* height: 100%; */
+    /* border: 1px solid red; */
 }
 
 footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-bottom: 2px;
+    padding-bottom: 3px;
     position: absolute;
     bottom: 0;
     width: 100%;
     color: white;
-}
-
-input {
-    width: 70px;
-    height: 30px;
-    text-align: center;
-}
-
-#input1 {
-    width: 110px;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    display: none;
 }
