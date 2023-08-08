@@ -8,12 +8,14 @@ let outputFiveElement = document.getElementById('input5');
 const RESISTANCE_ONE = 1.67;
 const RESISTANCE_TWO = 2.67;
 
-inputElement.addEventListener('input', () => {
-    calculations(getInputValue());
+document.body.addEventListener('input', (event) => {
+    if (event.target.id === 'input1') {
+        calculations(getInputValue(event.target));
+    }
 });
 
-const getInputValue = () => {
-    return Number(inputElement.value);
+const getInputValue = (element) => {
+    return Number(element.value);
 };
 
 const calculations = (inputValue) => {
@@ -28,12 +30,10 @@ const calculations = (inputValue) => {
 };
 
 const updateOutputValues = (outputs) => {
-    const outputElements = [
-        outputTwoElement,
-        outputThreeElement,
-        outputFourElement,
-        outputFiveElement,
-    ];
+    const outputElementsIds = ['input2', 'input3', 'input4', 'input5'];
+    const outputElements = outputElementsIds.map((id) =>
+        document.getElementById(id)
+    );
 
     for (let i = 0; i < outputElements.length; i++) {
         outputElements[i].value = outputs[i];
