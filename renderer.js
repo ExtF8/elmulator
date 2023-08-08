@@ -29,4 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function activateButton(button) {
         button.classList.add('active');
     }
+
+    const defaultPage = './pages/rings.html';
+    loadPage(defaultPage, container);
+
+    const defaultButton = Array.from(buttons).find(
+        (button) => button.getAttribute('data-load-page') === defaultPage
+    );
+    if (defaultButton) {
+        activateButton(defaultButton);
+    }
 });
