@@ -60,7 +60,6 @@ p {
 .button5 {
     background-color: white;
     color: black;
-    /* border: 2px solid #014b70; */
 }
 
 .button5:hover {
@@ -68,7 +67,10 @@ p {
     color: white;
 }
 
-.button5:s
+.button5.active {
+    background-color: #014;
+    color: white;
+}
 
 #pageContainer {
     display: flex;
@@ -76,8 +78,6 @@ p {
     align-items: center;
     justify-content: center;
     margin: 0 auto;
-    /* height: 100%; */
-    /* border: 1px solid red; */
 }
 
 footer {
