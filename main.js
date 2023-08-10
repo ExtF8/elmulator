@@ -4,13 +4,14 @@ const path = require('path');
 
 const createWindow = () => {
     // Create the browser window.
-    // 360 × 740
+    // 234 × 420
     const mainWindow = new BrowserWindow({
-        width: 360,
-        height: 740,
+        width: 234,
+        height: 420,
         webPreferences: {
             preload: path.join(__dirname, 'renderer.js'),
         },
+        alwaysOnTop: true,
     });
 
     // and load the index.html of the app.
