@@ -6,6 +6,7 @@ const createWindow = () => {
     // Create the browser window.
     // 234 × 420
     const mainWindow = new BrowserWindow({
+        icon: __dirname + '/images/icons/icon.ico',
         width: 234,
         height: 420,
         webPreferences: {
@@ -13,6 +14,7 @@ const createWindow = () => {
         },
         alwaysOnTop: true,
     });
+    // console.log(mainWindow.icon)
 
     // and load the index.html of the app.
     mainWindow.loadFile('index.html');
