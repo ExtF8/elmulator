@@ -4,10 +4,10 @@ const path = require('path');
 
 const createWindow = () => {
     // Create the browser window.
-    // 360 × 740
+    // 360 × 740 252 × 454
     const mainWindow = new BrowserWindow({
-        width: 360,
-        height: 740,
+        width: 280,
+        height: 460,
         webPreferences: {
             preload: path.join(__dirname, 'renderer.js'),
         },
