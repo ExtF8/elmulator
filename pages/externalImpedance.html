@@ -1,37 +1,31 @@
 <!DOCTYPE html>
 
-<div class="containerImpedance">
+<div class="impedance-container">
+    <h2>Impedance</h2>
     <!-- input -->
-    <div class="input_one">
-        <p id="input_title">Impedance</p>
+    <div class="impedance-input">
         <input
             type="number"
-            id="input1"
-            placeholder="input the number"
+            id="voltage_input"
+            placeholder="240V/400V"
             size="50"
         />
+        <button class="button imp-button">L1</button>
+        <button class="button imp-button">TP</button>
     </div>
-    <div class="output_container">
-        <!-- output 2 and 3 -->
-        <div class="outputs">
-            <p>x1.67 r2</p>
-            <input type="number" id="input2" readonly />
-            <p>x2.67 r2</p>
-            <input type="number" id="input3" readonly />
+    <div class="impedance-output-container">
+        <!-- outputs 1, 2 and 3 -->
+        <div class="impedance-outputs">
+            <p>Ipf</p>
+            <input type="number" id="output1" readonly placeholder="1.6kA"/>
         </div>
-
-        <!-- output 4 and 5 -->
-        <div class="outputs">
-            <p>R1+R2</p>
-            <input type="number" id="input4" readonly />
-            <p>R1+R2</p>
-            <input type="number" id="input5" readonly />
+        <div class="impedance-outputs">
+            <p>Zdb</p>
+            <input type="number" id="output2" readonly placeholder="3.2kA"/>
         </div>
-        <div class="outputs">
-            <p>R1+R2</p>
-            <input type="number" id="input6" readonly />
-            <p>R1+R2</p>
-            <input type="number" id="input7" readonly />
+        <div class="impedance-outputs">
+            <p>Ohms</p>
+            <input type="number" id="output3" readonly placeholder="0.15Ohms"/>
         </div>
     </div>
 </div>
