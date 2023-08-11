@@ -4,15 +4,17 @@ const path = require('path');
 
 const createWindow = () => {
     // Create the browser window.
-    // 360 × 740 252 × 454
+    // 234 × 420 252 × 454
     const mainWindow = new BrowserWindow({
-        width: 280,
-        height: 460,
+        icon: __dirname + '/images/icons/icon.ico',
+        width: 234,
+        height: 420,
         webPreferences: {
             preload: path.join(__dirname, 'renderer.js'),
         },
         alwaysOnTop: true,
     });
+    // console.log(mainWindow.icon)
 
     // and load the index.html of the app.
     mainWindow.loadFile('index.html');

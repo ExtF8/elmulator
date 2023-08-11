@@ -1,3 +1,4 @@
+/* General styling parameters */
 *,
 *::before,
 *::after {
@@ -5,6 +6,11 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    display: none;
 }
 
 html {
@@ -18,66 +24,19 @@ body {
 }
 
 header {
-    padding: 16px;
+    padding: 12px;
 }
 
 h1 {
     font-size: 32px;
 }
 
+h2 {
+    font-size: 30px;
+}
 
 p {
     font-size: 16px;
-}
-
-#pagesBtnContainer {
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    margin: 10px auto;
-    width: 100%;
-    height: 30px;
-    /* border: 1px solid green; */
-
-}
-
-.button {
-    border: none;
-    color: white;
-    width: 80px;
-    height: 30px;
-    padding: 6px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    /* margin: 50px 20px; */
-    transition-duration: 0.4s;
-    cursor: pointer;
-    border-radius: 4%;
-}
-
-.button5 {
-    background-color: white;
-    color: black;
-}
-
-.button5:hover {
-    background-color: #014b70;
-    color: white;
-}
-
-.button5.active {
-    background-color: #014;
-    color: white;
-}
-
-#pageContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
 }
 
 footer {
@@ -89,4 +48,102 @@ footer {
     bottom: 0;
     width: 100%;
     color: white;
+    font-size: small;
 }
+
+
+.button {
+    border: none;
+    color: white;
+    width: 72px;
+    height: 30px;
+    padding: 6px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.page-button {
+    background-color: white;
+    color: black;
+}
+
+.page-button:hover {
+    background-color: #014b70;
+    color: white;
+}
+
+.page-button.active {
+    background-color: #014;
+    color: white;
+}
+
+#pages_button_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 8px auto;
+    width: 100%;
+    height: 30px;
+    /* border: 1px solid green; */
+
+}
+
+#pages_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+/* Rings styling parameters */
+.rings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* margin: 0 auto; */
+}
+
+.rings-input-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+}
+
+.rings-output-container {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+}
+
+.rings-outputs {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+}
+
+input {
+    width: 70px;
+    height: 30px;
+    text-align: center;
+}
+
+#rings_input {
+    width: 110px;
+}
+
+
+
+/* Impedance styling parameters */
+
+/* Circuits Count styling parameters */

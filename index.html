@@ -9,8 +9,6 @@
         />
         <title>Elmulator</title>
         <link rel="stylesheet" href="style.css" />
-        <link rel="stylesheet" href="./stylesPages/rings.css" />
-        <link rel="stylesheet" href="./stylesPages/impendence.css" />
         <script src="./renderer.js" defer></script>
         <script src="./scriptsPages/resistanceCalculator.js" defer></script>
     </head>
@@ -20,30 +18,29 @@
             <h6>For the Rings that need to be Lorded</h6>
         </header>
         <main>
-            <nav id="pagesBtnContainer">
+            <nav id="pages_button_container">
                 <button
                     data-load-page="./pages/rings.html"
-                    class="button button5"
+                    class="button page-button"
                 >
                     Rings
                 </button>
                 <button
                     data-load-page="./pages/externalImpedance.html"
-                    class="button button5"
+                    class="button page-button"
                 >
                     Ze
                 </button>
                 <button
                     data-load-page="./pages/circuitsCount.html"
-                    class="button button5"
+                    class="button page-button"
                 >
                     cct
                 </button>
             </nav>
 
-            <div id="pageContainer"></div>
-            <!-- <script src="./scriptsPages/resistanceCalculator.js" defer></script> -->
+            <div id="pages_container"></div>
         </main>
-        <footer>Created by ExtF8</footer>
+        <footer>Developed by ExtF8</footer>
     </body>
 </html>

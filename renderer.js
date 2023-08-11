@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const buttons = document.querySelectorAll('[data-load-page]', 'button');
-    const container = document.getElementById('pageContainer');
+    const container = document.getElementById('pages_container');
 
     buttons.forEach((button) => {
         button.addEventListener('click', handleButtonClick);
