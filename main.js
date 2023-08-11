@@ -11,6 +11,7 @@ const createWindow = () => {
         webPreferences: {
             preload: path.join(__dirname, 'renderer.js'),
         },
+        alwaysOnTop: true,
     });
 
     // and load the index.html of the app.
