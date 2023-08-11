@@ -1,15 +1,15 @@
-let inputElement = document.getElementById('input1');
+let inputElement = document.getElementById('rings_input');
 
-let outputTwoElement = document.getElementById('input2');
-let outputThreeElement = document.getElementById('input3');
-let outputFourElement = document.getElementById('input4');
-let outputFiveElement = document.getElementById('input5');
+let outputOneElement = document.getElementById('rings_output1');
+let outputTwoElement = document.getElementById('rings_output2');
+let outputThreeElement = document.getElementById('rings_output3');
+let outputFourElement = document.getElementById('rings_output4');
 
 const RESISTANCE_ONE = 1.67;
 const RESISTANCE_TWO = 2.67;
 
 document.body.addEventListener('input', (event) => {
-    if (event.target.id === 'input1') {
+    if (event.target.id === 'rings_input') {
         calculations(getInputValue(event.target));
     }
 });
@@ -19,18 +19,23 @@ const getInputValue = (element) => {
 };
 
 const calculations = (inputValue) => {
-    const outputTwo = (inputValue * RESISTANCE_ONE).toFixed(2);
-    const outputThree = (inputValue * RESISTANCE_TWO).toFixed(2);
+    const outputOne = (inputValue * RESISTANCE_ONE).toFixed(2);
+    const outputTwo = (inputValue * RESISTANCE_TWO).toFixed(2);
+    const outputThree = ((inputValue + Number(outputOne)) / 4).toFixed(2);
     const outputFour = ((inputValue + Number(outputTwo)) / 4).toFixed(2);
-    const outputFive = ((inputValue + Number(outputThree)) / 4).toFixed(2);
 
-    const outputs = [outputTwo, outputThree, outputFour, outputFive];
+    const outputs = [outputOne, outputTwo, outputThree, outputFour];
 
     updateOutputValues(outputs);
 };
 
 const updateOutputValues = (outputs) => {
-    const outputElementsIds = ['input2', 'input3', 'input4', 'input5'];
+    const outputElementsIds = [
+        'rings_output1',
+        'rings_output2',
+        'rings_output3',
+        'rings_output4',
+    ];
     const outputElements = outputElementsIds.map((id) =>
         document.getElementById(id)
     );
