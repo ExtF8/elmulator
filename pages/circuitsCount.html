@@ -2,30 +2,32 @@
 
 <div class="containerCircuits">
     <!-- input -->
-    <div class="input_one">
-        <p id="input_title">Circuits</p>
+    <h2>Circuits</h2>
+    <div class="circuits-input-container">
         <input
             type="number"
-            id="input1"
-            placeholder="input the number"
+            id="circuits_input"
+            class="circuits-inputs"
+            placeholder="circuits"
             size="50"
         />
+        <input
+            type="number"
+            id="people_input"
+            class="circuits-inputs"
+            placeholder="people"
+            size="100"
+        />
     </div>
-    <div class="output_container">
-        <!-- output 2 and 3 -->
-        <div class="outputs">
-            <p>x1.67 r2</p>
-            <input type="number" id="input2" readonly />
-            <p>x2.67 r2</p>
-            <input type="number" id="input3" readonly />
+    <div class="circuits-outputs-container">
+        <!-- output 1 and 2 -->
+        <div class="circuits-outputs">
+            <p>Circuits for one person</p>
+            <input type="number" id="circuits_output" readonly />
         </div>
-
-        <!-- output 4 and 5 -->
-        <div class="outputs">
-            <p>R1+R2</p>
-            <input type="number" id="input4" readonly />
-            <p>R1+R2</p>
-            <input type="number" id="input5" readonly />
+        <div class="circuits-outputs">
+            <p>Circuits for other people</p>
+            <input type="number" id="people_output" readonly />
         </div>
     </div>
 </div>

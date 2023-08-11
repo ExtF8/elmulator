@@ -179,7 +179,6 @@ input {
     align-items: center;
     justify-content: space-evenly;
     padding-top: 20px;
-    /* border: 1px solid red; */
 }
 
 .impedance-outputs {
@@ -190,3 +189,22 @@ input {
 }
 
 /* Circuits Count styling parameters */
+
+.circuits-inputs {
+    margin: 10px auto;
+}
+
+.circuits-outputs-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 20px;
+    row-gap: 10px;
+}
+
+.circuits-outputs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 260px;
+}
