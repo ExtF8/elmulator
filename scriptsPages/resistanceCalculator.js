@@ -1,9 +1,4 @@
-let inputElement = document.getElementById('rings_input');
-
-let outputOneElement = document.getElementById('rings_output1');
-let outputTwoElement = document.getElementById('rings_output2');
-let outputThreeElement = document.getElementById('rings_output3');
-let outputFourElement = document.getElementById('rings_output4');
+// Rings resistance calculations
 
 const RESISTANCE_ONE = 1.67;
 const RESISTANCE_TWO = 2.67;
