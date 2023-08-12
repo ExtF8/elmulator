@@ -5,42 +5,32 @@ let circuitsInput = 0;
 let peopleInput = 0;
 
 // Get Circuits and People inputs
-const getInputs = (event) => {
+const handleCircuitsInputChanges = (event) => {
     if (event.target.id === 'circuits_input') {
-        circuitsInput = getCircuitsInputValue(event.target);
+        updateCircuitsInput(event.target);
     } else if (event.target.id === 'people_input') {
-        peopleInput = getPeopleInputValue(event.target);
+        updatePeopleInput(event.target);
     }
     calculateOutputValues();
 };
-document.body.addEventListener('input', getInputs);
+document.body.addEventListener('input', handleCircuitsInputChanges);
+
+// Update inputs
+const updateCircuitsInput = (element) => {
+    circuitsInput = getCircuitsInputValue(element);
+};
+
+const updatePeopleInput = (element) => {
+    peopleInput = getPeopleInputValue(element);
+};
 
 // Get Circuits value
 const getCircuitsInputValue = (element) => {
     return Number(element.value);
 };
-
 // Get People value
 const getPeopleInputValue = (element) => {
     return Number(element.value);
-};
-
-// Are inputs Valid
-const inputsAreValid = () => {
-    return circuitsInput !== 0 && peopleInput !== 0;
-};
-
-
-// Per person
-const calculateCircuitsPerPerson = () => {
-    if (!inputsAreValid()) return 0;
-    return Math.floor(circuitsInput / peopleInput);
-};
-
-// remainder
-const calculateRemainder = () => {
-    if (!inputsAreValid()) return 0;
-    return circuitsInput % peopleInput;
 };
 
 // Values for output
@@ -56,6 +46,23 @@ const calculateOutputValues = () => {
     outputs = [forOnePerson, forOthers];
 
     updateOutputs(outputs);
+};
+
+// Per person
+const calculateCircuitsPerPerson = () => {
+    if (!inputsAreValid()) return 0;
+    return Math.floor(circuitsInput / peopleInput);
+};
+
+// remainder
+const calculateRemainder = () => {
+    if (!inputsAreValid()) return 0;
+    return circuitsInput % peopleInput;
+};
+
+// Are inputs Valid
+const inputsAreValid = () => {
+    return circuitsInput !== 0 && peopleInput !== 0;
 };
 
 // Update calculated values
