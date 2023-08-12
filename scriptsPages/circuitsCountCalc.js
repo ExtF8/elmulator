@@ -4,8 +4,8 @@
 let circuitsInput = 0;
 let peopleInput = 0;
 
-// Get Circuits and People input values
-const provideInputsValues = (event) => {
+// Get Circuits and People inputs
+const getInputs = (event) => {
     if (event.target.id === 'circuits_input') {
         circuitsInput = getCircuitsInputValue(event.target);
     } else if (event.target.id === 'people_input') {
@@ -13,7 +13,7 @@ const provideInputsValues = (event) => {
     }
     calculateOutputValues();
 };
-document.body.addEventListener('input', provideInputsValues);
+document.body.addEventListener('input', getInputs);
 
 // Get Circuits value
 const getCircuitsInputValue = (element) => {
