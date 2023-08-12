@@ -4,43 +4,40 @@
 let circuitsInput = 0;
 let peopleInput = 0;
 
-// Circuits input
-document.body.addEventListener('input', (event) => {
+// Update Circuits and People input values
+const updateInputValue = (event) => {
     if (event.target.id === 'circuits_input') {
         circuitsInput = getCircuitsInputValue(event.target);
-        console.log(circuitsInput);
-    }
-    calculateOutputValues();
-});
-
-// People input
-document.body.addEventListener('input', (event) => {
-    if (event.target.id === 'people_input') {
+    } else if (event.target.id === 'people_input') {
         peopleInput = getPeopleInputValue(event.target);
-        console.log(peopleInput);
     }
     calculateOutputValues();
-});
+};
 
-// Circuits value
+// Are inputs Valid
+const inputsAreValid = () => {
+    return circuitsInput !== 0 || peopleInput !== 0;
+};
+
+// Get Circuits value
 const getCircuitsInputValue = (element) => {
     return Number(element.value);
 };
 
-// People value
+// Get People value
 const getPeopleInputValue = (element) => {
     return Number(element.value);
 };
 
 // Per person
 const calculateCircuitsPerPerson = () => {
-    if (circuitsInput && peopleInput === 0) return 0;
+    if (!inputsAreValid()) return 0;
     return Math.floor(circuitsInput / peopleInput);
 };
 
 // remainder
 const calculateRemainder = () => {
-    if (circuitsInput && peopleInput === 0) return 0;
+    if (!inputsAreValid()) return 0;
     return circuitsInput % peopleInput;
 };
 
@@ -71,3 +68,10 @@ const updateOutputs = (outputs) => {
         outputElements[i].value = outputs[i];
     }
 };
+
+document
+    .getElementById('circuits_input')
+    .addEventListener('input', updateInputValue);
+document
+    .getElementById('people_input')
+    .addEventListener('input', updateInputValue);
