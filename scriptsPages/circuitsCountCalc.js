@@ -4,8 +4,8 @@
 let circuitsInput = 0;
 let peopleInput = 0;
 
-// Update Circuits and People input values
-const updateInputValue = (event) => {
+// Get Circuits and People input values
+const provideInputsValues = (event) => {
     if (event.target.id === 'circuits_input') {
         circuitsInput = getCircuitsInputValue(event.target);
     } else if (event.target.id === 'people_input') {
@@ -13,11 +13,7 @@ const updateInputValue = (event) => {
     }
     calculateOutputValues();
 };
-
-// Are inputs Valid
-const inputsAreValid = () => {
-    return circuitsInput !== 0 || peopleInput !== 0;
-};
+document.body.addEventListener('input', provideInputsValues);
 
 // Get Circuits value
 const getCircuitsInputValue = (element) => {
@@ -28,6 +24,12 @@ const getCircuitsInputValue = (element) => {
 const getPeopleInputValue = (element) => {
     return Number(element.value);
 };
+
+// Are inputs Valid
+const inputsAreValid = () => {
+    return circuitsInput !== 0 && peopleInput !== 0;
+};
+
 
 // Per person
 const calculateCircuitsPerPerson = () => {
@@ -68,10 +70,3 @@ const updateOutputs = (outputs) => {
         outputElements[i].value = outputs[i];
     }
 };
-
-document
-    .getElementById('circuits_input')
-    .addEventListener('input', updateInputValue);
-document
-    .getElementById('people_input')
-    .addEventListener('input', updateInputValue);
