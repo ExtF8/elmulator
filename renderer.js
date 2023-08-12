@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('[data-load-page]', 'button');
+    const buttons = document.querySelectorAll('button[data-load-page]');
     const container = document.getElementById('pages_container');
+    const defaultPage = './pages/rings.html';
 
     // Script mapping
     const scriptMapping = {
@@ -9,9 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
         './pages/rings.html': './scriptsPages/resistanceCalculator.js',
     };
 
+    const defaultButton = Array.from(buttons).find(
+        (button) => button.getAttribute('data-load-page') === defaultPage
+    );
+
     buttons.forEach((button) => {
         button.addEventListener('click', handleButtonClick);
     });
+
+    if (defaultButton) {
+        activateButton(defaultButton);
+    }
+
+    loadPage(defaultPage, container);
 
     function handleButtonClick(e) {
         const pageToLoad = e.target.getAttribute('data-load-page');
@@ -35,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then((html) => {
                 container.innerHTML = html;
             });
-            loadScript(scriptMapping[url])
+        loadScript(scriptMapping[url]);
     }
 
     // Load script
@@ -52,16 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
         script.src = scriptUrl;
         script.defer = true;
 
-        document.body.appendChild(script);
-    }
-
-    const defaultPage = './pages/rings.html';
-    loadPage(defaultPage, container);
-
-    const defaultButton = Array.from(buttons).find(
-        (button) => button.getAttribute('data-load-page') === defaultPage
-    );
-    if (defaultButton) {
-        activateButton(defaultButton);
+        document.head.appendChild(script);
     }
 });
