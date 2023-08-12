@@ -19,12 +19,12 @@
         let outputThree = ((inputValue + Number(outputOne)) / 4).toFixed(2);
         let outputFour = ((inputValue + Number(outputTwo)) / 4).toFixed(2);
 
-        const outputs = [outputOne, outputTwo, outputThree, outputFour];
+        const resistanceOutputs = [outputOne, outputTwo, outputThree, outputFour];
 
-        updateOutputValues(outputs);
+        updateOutputValues(resistanceOutputs);
     };
 
-    const updateOutputValues = (outputs) => {
+    const updateOutputValues = (resistanceOutputs) => {
         const outputElementsIds = [
             'rings_output1',
             'rings_output2',
@@ -36,7 +36,7 @@
         );
 
         for (let i = 0; i < outputElements.length; i++) {
-            outputElements[i].value = outputs[i];
+            outputElements[i].value = resistanceOutputs[i];
         }
     };
 })();

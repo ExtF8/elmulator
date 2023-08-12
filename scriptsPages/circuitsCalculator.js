@@ -43,9 +43,9 @@
         // For others
         let forOthers = circuitsPerPerson;
 
-        outputs = [forOnePerson, forOthers];
+        let circuitsOutputs = [forOnePerson, forOthers];
 
-        updateOutputs(outputs);
+        updateOutputs(circuitsOutputs);
     };
 
     // Per person
@@ -66,7 +66,7 @@
     };
 
     // Update calculated values
-    const updateOutputs = (outputs) => {
+    const updateOutputs = (circuitsOutputs) => {
         const outputElementIds = ['one_person_output', 'people_output'];
 
         const outputElements = outputElementIds.map((id) =>
@@ -74,7 +74,7 @@
         );
 
         for (let i = 0; i < outputElements.length; i++) {
-            outputElements[i].value = outputs[i];
+            outputElements[i].value = circuitsOutputs[i];
         }
     };
 })();
