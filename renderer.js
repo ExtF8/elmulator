@@ -40,13 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
         buttons.forEach((button) => button.classList.remove('active'));
     }
     // Load page
-    function loadPage(url, container) {
-        fetch(url)
-            .then((response) => response.text())
-            .then((html) => {
-                container.innerHTML = html;
-            });
-        loadScript(scriptMapping[url]);
+    async function loadPage(url, container) {
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            container.innerHTML = html;
+            loadScript(scriptMapping[url]);
+        } catch (error) {
+            console.error('Error loading page:', error);
+        }
     }
 
     // Load script
