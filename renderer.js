@@ -1,10 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('[data-load-page]', 'button');
+    const buttons = document.querySelectorAll('button[data-load-page]');
     const container = document.getElementById('pages_container');
+    const defaultPage = './pages/rings.html';
+
+    // Script mapping
+    const scriptMapping = {
+        './pages/circuitsCount.html': './scriptsPages/circuitsCalculator.js',
+        './pages/externalImpedance.html': './scriptsPages/impedanceCalculator.js',
+        './pages/rings.html': './scriptsPages/resistanceCalculator.js',
+    };
+
+    const defaultButton = Array.from(buttons).find(
+        (button) => button.getAttribute('data-load-page') === defaultPage
+    );
 
     buttons.forEach((button) => {
         button.addEventListener('click', handleButtonClick);
     });
+
+    if (defaultButton) {
+        activateButton(defaultButton);
+    }
+
+    loadPage(defaultPage, container);
 
     function handleButtonClick(e) {
         const pageToLoad = e.target.getAttribute('data-load-page');
@@ -14,29 +32,39 @@ document.addEventListener('DOMContentLoaded', () => {
         activateButton(e.target);
     }
 
-    function deactivateButtons(buttons) {
-        buttons.forEach((button) => button.classList.remove('active'));
-    }
-
-    function loadPage(url, container) {
-        fetch(url)
-            .then((response) => response.text())
-            .then((html) => {
-                container.innerHTML = html;
-            });
-    }
-
     function activateButton(button) {
         button.classList.add('active');
     }
 
-    const defaultPage = './pages/rings.html';
-    loadPage(defaultPage, container);
+    function deactivateButtons(buttons) {
+        buttons.forEach((button) => button.classList.remove('active'));
+    }
+    // Load page
+    async function loadPage(url, container) {
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            container.innerHTML = html;
+            loadScript(scriptMapping[url]);
+        } catch (error) {
+            console.error('Error loading page:', error);
+        }
+    }
 
-    const defaultButton = Array.from(buttons).find(
-        (button) => button.getAttribute('data-load-page') === defaultPage
-    );
-    if (defaultButton) {
-        activateButton(defaultButton);
+    // Load script
+    function loadScript(scriptUrl) {
+        // Remove old script
+        const oldScript = document.getElementById('calculations_script');
+        if (oldScript) {
+            oldScript.remove();
+        }
+
+        // Create and append the new script element
+        const script = document.createElement('script');
+        script.id = 'calculations_script';
+        script.src = scriptUrl;
+        script.defer = true;
+
+        document.head.appendChild(script);
     }
 });
