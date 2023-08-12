@@ -206,5 +206,7 @@ input {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 260px;
+    padding: 0 4px;
+    width: 100%;
+    gap: 10px;
 }
