@@ -34,10 +34,18 @@ h1 {
 
 h2 {
     font-size: 30px;
+    margin: 10px 0;
 }
 
 p {
     font-size: 16px;
+    padding: 2px;
+}
+
+input {
+    width: 70px;
+    height: 30px;
+    text-align: center;
 }
 
 footer {
@@ -121,7 +129,7 @@ footer {
 .rings-output-container {
     display: flex;
     flex-direction: row;
-    padding: 10px;
+    /* padding: 10px; */
 }
 
 .rings-outputs {
@@ -129,13 +137,7 @@ footer {
     flex-direction: column;
     justify-content: space-between;
     gap: 10px;
-    padding: 10px;
-}
-
-input {
-    width: 70px;
-    height: 30px;
-    text-align: center;
+    padding: 0 10px;
 }
 
 #rings_input {
@@ -149,29 +151,11 @@ input {
     flex-direction: row;
     justify-content: space-evenly;
     gap: 10px;
-    padding: 10px;
+    padding: 0 4px;
 }
 
-#voltage_input {
-    width: 80px;
-}
-
-.imp-button {
-    width: 68px;
-    height: 28px;
-    padding: 6px;
-    background-color: white;
-    color: black;
-}
-
-.imp-button:hover {
-    background-color: #00bfff;
-    color: white;
-}
-
-.imp-button.active {
-    background-color: #014;
-    color: white;
+.impedance-container input {
+    width: 100px;
 }
 
 .impedance-output-container {
