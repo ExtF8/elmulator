@@ -41,7 +41,7 @@
             const voltageInputElement =
                 document.getElementById('voltage_input');
 
-            voltageInputElement.value = voltageInput.toString();
+            voltageInputElement.value = voltageInput;
         }
     };
 
@@ -55,8 +55,8 @@
     // TP - outputIpf = L1 - outputIpf * 2
     const calculateImpedanceOutputValues = () => {
         if (inputsAreValid()) {
-            const onePhaseOutput = Math.round(voltageInput / zdbInput);
-            const threePhaseOutput = Math.round(onePhaseOutput * 2);
+            const onePhaseOutput = voltageInput / zdbInput;
+            const threePhaseOutput = onePhaseOutput * 2;
 
             convertImpedanceOutputValues(onePhaseOutput, threePhaseOutput);
         }
@@ -65,14 +65,24 @@
     const convertImpedanceOutputValues = (onePhaseOutput, threePhaseOutput) => {
         let decimalPlaces = zdbInput >= 5 ? 4 : 2;
 
-        let onePhaseOutputKA = (onePhaseOutput / 1000).toFixed(decimalPlaces);
-        let threePhaseOutputKA = (threePhaseOutput / 1000).toFixed(
+        let onePhaseOutputKA = roundToDecimal(
+            onePhaseOutput / 1000,
+            decimalPlaces
+        );
+        let threePhaseOutputKA = roundToDecimal(
+            threePhaseOutput / 1000,
             decimalPlaces
         );
 
         const convertedImpedanceValues = [onePhaseOutputKA, threePhaseOutputKA];
 
         updateConvertedImpedanceOutputs(convertedImpedanceValues);
+    };
+
+    // Helper function for rounding to specific number of decimal places
+    const roundToDecimal = (number, decimalPlaces) => {
+        const factor = Math.pow(10, decimalPlaces);
+        return Math.round(number * factor) / factor;
     };
 
     // Are inputs Valid
