@@ -4,30 +4,56 @@
     <!-- input -->
     <h2>Circuits</h2>
     <div class="circuits-input-container">
-        <input
-            type="number"
-            id="circuits_input"
-            class="circuits-inputs"
-            placeholder="circuits"
-            size="50"
-        />
-        <input
-            type="number"
-            id="people_input"
-            class="circuits-inputs"
-            placeholder="people"
-            size="50"
-        />
+        <div class="engineers-inputs">
+            <p>Engineers</p>
+            <div id="engineers-input">
+                <input
+                    type="number"
+                    id="people_input"
+                    placeholder="count"
+                    size="50"
+                />
+            </div>
+        </div>
+        <div class="circuits-inputs">
+            <p>Circuits</p>
+            <div class="phases-container">
+                <div class="phases">
+                    <p id="sp">SP</p>
+                    <input
+                        type="number"
+                        id="circuits_input_sp"
+                        placeholder="circuits"
+                        size="50"
+                    />
+                </div>
+                <div class="phases">
+                    <p>TP</p>
+                    <input
+                        type="number"
+                        id="circuits_input_tp"
+                        placeholder="circuits"
+                        size="50"
+                    />
+                </div>
+            </div>
+        </div>
     </div>
     <div class="circuits-outputs-container">
         <!-- output 1 and 2 -->
         <div class="circuits-outputs">
-            <p>Circuits for one person</p>
-            <input type="number" id="one_person_output" readonly />
+            <p>Top dog</p>
+            <div>
+                <input type="number" id="one_person_output_sp" readonly />
+                <input type="number" id="one_person_output_tp" readonly />
+            </div>
         </div>
         <div class="circuits-outputs">
-            <p>Circuits for other people</p>
-            <input type="number" id="people_output" readonly />
+            <p>Underdogs</p>
+            <div>
+                <input type="number" id="people_output_sp" readonly />
+                <input type="number" id="people_output_tp" readonly />
+            </div>
         </div>
     </div>
 </div>

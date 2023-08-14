@@ -177,24 +177,59 @@ footer {
 }
 
 /* Circuits Count styling parameters */
-
-.circuits-inputs {
-    margin: 10px auto;
+.circuits-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 10px;
 }
 
-.circuits-outputs-container {
+.engineers-inputs {
     display: flex;
     align-items: center;
+    width: 100%;
+    padding: 0 10px;
+}
+#engineers-input {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#engineers-input input {
+    margin-left: 18%;
+}
+
+.engineers-inputs p {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.circuits-outputs-container,
+.circuits-input-container {
+    display: flex;
     flex-direction: column;
-    margin-top: 20px;
+    margin-top: 10px;
+    width: 100%;
     row-gap: 10px;
 }
 
-.circuits-outputs {
+.circuits-outputs,
+.circuits-inputs {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 4px;
-    width: 100%;
-    gap: 10px;
+    padding: 0 10px;
+}
+
+.circuits-inputs p {
+    align-self: flex-end;
+    margin-bottom: 2.5px;
+}
+
+.phases-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+
 }

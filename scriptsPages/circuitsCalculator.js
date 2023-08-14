@@ -1,81 +1,73 @@
 // Circuits Count Calculations
 (function () {
-    // Initialize values
-    let circuitsInput = 0;
+    let circuitsInputSP = 0;
+    let circuitsInputTP = 0;
     let peopleInput = 0;
 
-    // Get Circuits and People inputs
     const handleCircuitsInputChanges = (event) => {
-        if (event.target.id === 'circuits_input') {
-            updateCircuitsInput(event.target);
-        } else if (event.target.id === 'people_input') {
-            updatePeopleInput(event.target);
+        switch (event.target.id) {
+            case 'people_input':
+                peopleInput = getCircuitsInputValue(event.target);
+                break;
+            case 'circuits_input_sp':
+                circuitsInputSP = getCircuitsInputValue(event.target);
+                break;
+            case 'circuits_input_tp':
+                circuitsInputTP = getCircuitsInputValue(event.target);
+                break;
         }
         calculateCircuitOutputValues();
     };
 
-    document.querySelector('.circuits-container').addEventListener('input', handleCircuitsInputChanges);
+    document
+        .querySelector('.circuits-container')
+        .addEventListener('input', handleCircuitsInputChanges);
 
-    // Update inputs
-    const updateCircuitsInput = (element) => {
-        circuitsInput = getCircuitsInputValue(element);
-    };
-
-    const updatePeopleInput = (element) => {
-        peopleInput = getPeopleInputValue(element);
-    };
-
-    // Get Circuits value
     const getCircuitsInputValue = (element) => {
         return Number(element.value);
     };
-    // Get People value
-    const getPeopleInputValue = (element) => {
-        return Number(element.value);
-    };
 
-    // Values for output
     const calculateCircuitOutputValues = () => {
-        let circuitsPerPerson = calculateCircuitsPerPerson();
-        let remainder = calculateRemainder();
+        ['sp', 'tp'].forEach((type) => {
+            const circuitsInput =
+                type === 'sp' ? circuitsInputSP : circuitsInputTP;
 
-        // For one person
-        let forOnePerson = circuitsPerPerson + remainder;
-        // For others
-        let forOthers = circuitsPerPerson;
+            if (circuitsInput === 0) return;
 
-        let circuitsOutputs = [forOnePerson, forOthers];
+            const circuitsPerPerson = calculateCircuitsPerPerson(circuitsInput);
+            const remainder = calculateRemainder(circuitsInput);
 
-        updateCircuitOutputs(circuitsOutputs);
+            const forOnePerson = circuitsPerPerson + remainder;
+            const forOthers = circuitsPerPerson;
+
+            updateCircuitOutputs([forOnePerson, forOthers], type);
+        });
     };
 
-    // Per person
-    const calculateCircuitsPerPerson = () => {
-        if (!inputsAreValid()) return 0;
-        return Math.floor(circuitsInput / peopleInput);
+    const calculateCircuitsPerPerson = (circuitsInput) => {
+        return inputsAreValid() ? Math.floor(circuitsInput / peopleInput) : 0;
     };
 
-    // remainder
-    const calculateRemainder = () => {
-        if (!inputsAreValid()) return 0;
-        return circuitsInput % peopleInput;
+    const calculateRemainder = (circuitsInput) => {
+        return inputsAreValid() ? circuitsInput % peopleInput : 0;
     };
 
-    // Are inputs Valid
     const inputsAreValid = () => {
-        return circuitsInput !== 0 && peopleInput !== 0;
+        return (
+            (circuitsInputSP !== 0 || circuitsInputTP !== 0) &&
+            peopleInput !== 0
+        );
     };
 
-    // Update calculated values
-    const updateCircuitOutputs = (circuitsOutputs) => {
-        const circuitsOutputElementIds = ['one_person_output', 'people_output'];
+    const updateCircuitOutputs = (circuitsOutputs, type) => {
+        const circuitsOutputElementIds = [
+            `one_person_output_${type}`,
+            `people_output_${type}`,
+        ];
 
-        const circuitsOutputElements = circuitsOutputElementIds.map((id) =>
-            document.getElementById(id)
+        circuitsOutputElementIds.forEach(
+            (id, index) =>
+                (document.getElementById(id).value = circuitsOutputs[index])
         );
-
-        for (let i = 0; i < circuitsOutputElements.length; i++) {
-            circuitsOutputElements[i].value = circuitsOutputs[i];
-        }
     };
 })();
