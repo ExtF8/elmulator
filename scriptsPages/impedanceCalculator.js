@@ -2,9 +2,9 @@
 (function () {
     // Initialize values
     let voltageInput = 0;
-    let zbdInput = 0;
+    let zdbInput = 0;
 
-    // Get Voltage and Zbd inputs
+    // Get Voltage and zdb inputs
     const handleImpedanceInputChanges = (event) => {
         updateImpedanceInputValue(event.target);
 
@@ -22,16 +22,16 @@
     const updateImpedanceInputValue = (element) => {
         if (element.id === 'voltage_input') {
             voltageInput = getNumericInputValue(element);
-        } else if (element.id === 'zbd_input') {
-            zbdInput = getNumericInputValue(element);
+        } else if (element.id === 'zdb_input') {
+            zdbInput = getNumericInputValue(element);
         }
     };
 
     // Default voltage value
     const onlyOneInputProvided = () => {
         return (
-            (voltageInput === 0 && zbdInput !== 0) ||
-            (zbdInput === 0 && voltageInput !== 0)
+            (voltageInput === 0 && zdbInput !== 0) ||
+            (zdbInput === 0 && voltageInput !== 0)
         );
     };
     const setDefaultVoltageInput = () => {
@@ -51,28 +51,24 @@
     };
 
     // Calculate Impedance output Values
-    // L1- outputIpf = inputVoltage / inputZbd
+    // L1- outputIpf = inputVoltage / inputZdb
     // TP - outputIpf = L1 - outputIpf * 2
     const calculateImpedanceOutputValues = () => {
         if (inputsAreValid()) {
-            const onePhaseOutput = Math.round(voltageInput / zbdInput);
+            const onePhaseOutput = Math.round(voltageInput / zdbInput);
             const threePhaseOutput = Math.round(onePhaseOutput * 2);
 
-            console.log('L1:', onePhaseOutput);
-            console.log('TP', threePhaseOutput);
-
-            const impedanceOutputValues = [onePhaseOutput, threePhaseOutput];
-
-            updateImpedanceOutputs(impedanceOutputValues);
             convertImpedanceOutputValues(onePhaseOutput, threePhaseOutput);
         }
     };
 
     const convertImpedanceOutputValues = (onePhaseOutput, threePhaseOutput) => {
-        const onePhaseOutputKA = (onePhaseOutput / 1000).toFixed(2);
-        console.log('Converted:', onePhaseOutputKA);
-        const threePhaseOutputKA = (threePhaseOutput / 1000).toFixed(2);
-        console.log('Converted:', threePhaseOutputKA);
+        let decimalPlaces = zdbInput >= 5 ? 4 : 2;
+
+        let onePhaseOutputKA = (onePhaseOutput / 1000).toFixed(decimalPlaces);
+        let threePhaseOutputKA = (threePhaseOutput / 1000).toFixed(
+            decimalPlaces
+        );
 
         const convertedImpedanceValues = [onePhaseOutputKA, threePhaseOutputKA];
 
@@ -81,23 +77,7 @@
 
     // Are inputs Valid
     const inputsAreValid = () => {
-        return voltageInput !== 0 && zbdInput !== 0;
-    };
-
-    // Update outputs
-    const updateImpedanceOutputs = (impedanceOutputValues) => {
-        const impedanceOutputElementIds = [
-            'one_phase_ipf_output',
-            'three_phase_ipf_output',
-        ];
-
-        const impedanceOutputElements = impedanceOutputElementIds.map((id) =>
-            document.getElementById(id)
-        );
-
-        for (let i = 0; i < impedanceOutputElements.length; i++) {
-            impedanceOutputElements[i].value = impedanceOutputValues[i];
-        }
+        return voltageInput !== 0 && zdbInput !== 0;
     };
 
     const updateConvertedImpedanceOutputs = (convertedImpedanceValues) => {
