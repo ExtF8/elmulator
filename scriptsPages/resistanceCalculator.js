@@ -1,11 +1,11 @@
-// Rings resistance calculations
+// Rings Resistance Calculations
 (function () {
     const RESISTANCE_ONE = 1.67;
     const RESISTANCE_TWO = 2.67;
 
-    document.body.addEventListener('input', (event) => {
+    document.querySelector('.rings-container').addEventListener('input', (event) => {
         if (event.target.id === 'rings_input') {
-            calculations(getInputValue(event.target));
+            calculateResistanceOutputValues(getInputValue(event.target));
         }
     });
 
@@ -13,7 +13,7 @@
         return Number(element.value);
     };
 
-    const calculations = (inputValue) => {
+    const calculateResistanceOutputValues = (inputValue) => {
         let outputOne = (inputValue * RESISTANCE_ONE).toFixed(2);
         let outputTwo = (inputValue * RESISTANCE_TWO).toFixed(2);
         let outputThree = ((inputValue + Number(outputOne)) / 4).toFixed(2);
@@ -21,22 +21,22 @@
 
         const resistanceOutputs = [outputOne, outputTwo, outputThree, outputFour];
 
-        updateOutputValues(resistanceOutputs);
+        updateResistanceOutputValues(resistanceOutputs);
     };
 
-    const updateOutputValues = (resistanceOutputs) => {
-        const outputElementsIds = [
+    const updateResistanceOutputValues = (resistanceOutputs) => {
+        const resistanceOutputElementsIds = [
             'rings_output1',
             'rings_output2',
             'rings_output3',
             'rings_output4',
         ];
-        const outputElements = outputElementsIds.map((id) =>
+        const resistanceOutputElements = resistanceOutputElementsIds.map((id) =>
             document.getElementById(id)
         );
 
-        for (let i = 0; i < outputElements.length; i++) {
-            outputElements[i].value = resistanceOutputs[i];
+        for (let i = 0; i < resistanceOutputElements.length; i++) {
+            resistanceOutputElements[i].value = resistanceOutputs[i];
         }
     };
 })();
