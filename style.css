@@ -172,6 +172,10 @@ footer {
     justify-content: space-evenly;
 }
 
+.impedance-outputs input {
+    margin: 4px
+}
+
 /* Circuits Count styling parameters */
 
 .circuits-inputs {
