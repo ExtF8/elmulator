@@ -1,37 +1,117 @@
 // External Impedance Calculations
 (function () {
     // Initialize values
-    let onePhaseIpfOutput = 0;
-    let threePhaseIpfOutput = 0;
+    let voltageInput = 0;
+    let zbdInput = 0;
 
-    let ipf = onePhaseIpfOutput;
-    let tpIpf = threePhaseIpfOutput;
+    // Get Voltage and Zbd inputs
+    const handleImpedanceInputChanges = (event) => {
+        updateImpedanceInputValue(event.target);
 
-    // Get inputs Voltage and Input Zbd
-    const getImpedanceInputs = (event) => {
-        if (event.target.id === 'voltage_input') {
-            voltageInput = getVoltageInputValue(event.target);
-            console.log(voltageInput);
-        } else if (event.target.id === 'zbd_input') {
-            zbdInput = getZbdInputValue(event.target);
-            console.log(zbdInput);
+        if (onlyOneInputProvided()) {
+            setDefaultVoltageInput();
+        }
+
+        calculateImpedanceOutputValues();
+    };
+
+    document
+        .querySelector('.impedance-container')
+        .addEventListener('input', handleImpedanceInputChanges);
+
+    const updateImpedanceInputValue = (element) => {
+        if (element.id === 'voltage_input') {
+            voltageInput = getNumericInputValue(element);
+        } else if (element.id === 'zbd_input') {
+            zbdInput = getNumericInputValue(element);
         }
     };
-    document.body.addEventListener('input', getImpedanceInputs);
 
-    // Get Voltage inputs values
-    const getVoltageInputValue = (element) => {
+    // Default voltage value
+    const onlyOneInputProvided = () => {
+        return (
+            (voltageInput === 0 && zbdInput !== 0) ||
+            (zbdInput === 0 && voltageInput !== 0)
+        );
+    };
+    const setDefaultVoltageInput = () => {
+        if (voltageInput === 0) {
+            voltageInput = 240;
+
+            const voltageInputElement =
+                document.getElementById('voltage_input');
+
+            voltageInputElement.value = voltageInput.toString();
+        }
+    };
+
+    // Get numeric inputs values
+    const getNumericInputValue = (element) => {
         return Number(element.value);
     };
 
-    // Get Zbd inputs values
-    const getZbdInputValue = (element) => {
-        return Number(element.value);
+    // Calculate Impedance output Values
+    // L1- outputIpf = inputVoltage / inputZbd
+    // TP - outputIpf = L1 - outputIpf * 2
+    const calculateImpedanceOutputValues = () => {
+        if (inputsAreValid()) {
+            const onePhaseOutput = Math.round(voltageInput / zbdInput);
+            const threePhaseOutput = Math.round(onePhaseOutput * 2);
+
+            console.log('L1:', onePhaseOutput);
+            console.log('TP', threePhaseOutput);
+
+            const impedanceOutputValues = [onePhaseOutput, threePhaseOutput];
+
+            updateImpedanceOutputs(impedanceOutputValues);
+            convertImpedanceOutputValues(onePhaseOutput, threePhaseOutput);
+        }
     };
 
-    // Calculate L1 Ipf output
+    const convertImpedanceOutputValues = (onePhaseOutput, threePhaseOutput) => {
+        const onePhaseOutputKA = (onePhaseOutput / 1000).toFixed(2);
+        console.log('Converted:', onePhaseOutputKA);
+        const threePhaseOutputKA = (threePhaseOutput / 1000).toFixed(2);
+        console.log('Converted:', threePhaseOutputKA);
 
-    // Calculate TP Ipf output
+        const convertedImpedanceValues = [onePhaseOutputKA, threePhaseOutputKA];
+
+        updateConvertedImpedanceOutputs(convertedImpedanceValues);
+    };
+
+    // Are inputs Valid
+    const inputsAreValid = () => {
+        return voltageInput !== 0 && zbdInput !== 0;
+    };
 
     // Update outputs
-});
+    const updateImpedanceOutputs = (impedanceOutputValues) => {
+        const impedanceOutputElementIds = [
+            'one_phase_ipf_output',
+            'three_phase_ipf_output',
+        ];
+
+        const impedanceOutputElements = impedanceOutputElementIds.map((id) =>
+            document.getElementById(id)
+        );
+
+        for (let i = 0; i < impedanceOutputElements.length; i++) {
+            impedanceOutputElements[i].value = impedanceOutputValues[i];
+        }
+    };
+
+    const updateConvertedImpedanceOutputs = (convertedImpedanceValues) => {
+        const impedanceOutputElementIds = [
+            'one_phase_ipf_output_ka',
+            'three_phase_ipf_output_ka',
+        ];
+
+        const impedanceOutputElements = impedanceOutputElementIds.map((id) =>
+            document.getElementById(id)
+        );
+
+        for (let i = 0; i < impedanceOutputElements.length; i++) {
+            impedanceOutputElements[i].value = convertedImpedanceValues[i];
+        }
+    };
+})();
