@@ -11,9 +11,10 @@
         } else if (event.target.id === 'people_input') {
             updatePeopleInput(event.target);
         }
-        calculateOutputValues();
+        calculateCircuitOutputValues();
     };
-    document.body.addEventListener('input', handleCircuitsInputChanges);
+
+    document.querySelector('.circuits-container').addEventListener('input', handleCircuitsInputChanges);
 
     // Update inputs
     const updateCircuitsInput = (element) => {
@@ -34,7 +35,7 @@
     };
 
     // Values for output
-    const calculateOutputValues = () => {
+    const calculateCircuitOutputValues = () => {
         let circuitsPerPerson = calculateCircuitsPerPerson();
         let remainder = calculateRemainder();
 
@@ -43,9 +44,9 @@
         // For others
         let forOthers = circuitsPerPerson;
 
-        outputs = [forOnePerson, forOthers];
+        let circuitsOutputs = [forOnePerson, forOthers];
 
-        updateOutputs(outputs);
+        updateCircuitOutputs(circuitsOutputs);
     };
 
     // Per person
@@ -66,15 +67,15 @@
     };
 
     // Update calculated values
-    const updateOutputs = (outputs) => {
-        const outputElementIds = ['one_person_output', 'people_output'];
+    const updateCircuitOutputs = (circuitsOutputs) => {
+        const circuitsOutputElementIds = ['one_person_output', 'people_output'];
 
-        const outputElements = outputElementIds.map((id) =>
+        const circuitsOutputElements = circuitsOutputElementIds.map((id) =>
             document.getElementById(id)
         );
 
-        for (let i = 0; i < outputElements.length; i++) {
-            outputElements[i].value = outputs[i];
+        for (let i = 0; i < circuitsOutputElements.length; i++) {
+            circuitsOutputElements[i].value = circuitsOutputs[i];
         }
     };
 })();

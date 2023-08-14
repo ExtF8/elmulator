@@ -4,28 +4,31 @@
     <h2>Impedance</h2>
     <!-- input -->
     <div class="impedance-input">
-        <input
-            type="number"
-            id="voltage_input"
-            placeholder="240V/400V"
-            size="50"
-        />
-        <button class="button imp-button">L1</button>
-        <button class="button imp-button">TP</button>
+        <div class="voltage-input-container">
+            <p>input Voltage</p>
+            <input
+                type="number"
+                id="voltage_input"
+                placeholder="200-260"
+                size="50"
+            />
+        </div>
+        <div class="zbd-input-container">
+            <p>input Zbd</p>
+            <input type="number" id="zbd_input" placeholder="0.01" size="50" />
+        </div>
     </div>
     <div class="impedance-output-container">
-        <!-- outputs 1, 2 and 3 -->
+        <!-- outputs 1 and 2 -->
         <div class="impedance-outputs">
-            <p>Ipf</p>
-            <input type="number" id="output1" readonly placeholder="1.6kA"/>
+            <p>L1 Ipf</p>
+            <input type="number" id="one_phase_ipf_output" readonly />
+            <input type="number" id="one_phase_ipf_output_ka" readonly />
         </div>
         <div class="impedance-outputs">
-            <p>Zdb</p>
-            <input type="number" id="output2" readonly placeholder="3.2kA"/>
-        </div>
-        <div class="impedance-outputs">
-            <p>Ohms</p>
-            <input type="number" id="output3" readonly placeholder="0.15Ohms"/>
+            <p>TP Ipf</p>
+            <input type="number" id="three_phase_ipf_output" readonly />
+            <input type="number" id="three_phase_ipf_output_ka" readonly />
         </div>
     </div>
 </div>
