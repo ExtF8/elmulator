@@ -2,12 +2,12 @@
 (function () {
     let circuitsInputSP = 0;
     let circuitsInputTP = 0;
-    let peopleInput = 0;
+    let engineersInput = 0;
 
     const handleCircuitsInputChanges = (event) => {
         switch (event.target.id) {
-            case 'people_input':
-                peopleInput = getCircuitsInputValue(event.target);
+            case 'engineers_input':
+                engineersInput = getCircuitsInputValue(event.target);
                 break;
             case 'circuits_input_sp':
                 circuitsInputSP = getCircuitsInputValue(event.target);
@@ -34,35 +34,35 @@
 
             if (circuitsInput === 0) return;
 
-            const circuitsPerPerson = calculateCircuitsPerPerson(circuitsInput);
+            const circuitsPerEngineer = calculateCircuitsPerEngineer(circuitsInput);
             const remainder = calculateRemainder(circuitsInput);
 
-            const forOnePerson = circuitsPerPerson + remainder;
-            const forOthers = circuitsPerPerson;
+            const forOneEngineer = circuitsPerEngineer + remainder;
+            const forOthers = circuitsPerEngineer;
 
-            updateCircuitOutputs([forOnePerson, forOthers], type);
+            updateCircuitOutputs([forOneEngineer, forOthers], type);
         });
     };
 
-    const calculateCircuitsPerPerson = (circuitsInput) => {
-        return inputsAreValid() ? Math.floor(circuitsInput / peopleInput) : 0;
+    const calculateCircuitsPerEngineer = (circuitsInput) => {
+        return inputsAreValid() ? Math.floor(circuitsInput / engineersInput) : 0;
     };
 
     const calculateRemainder = (circuitsInput) => {
-        return inputsAreValid() ? circuitsInput % peopleInput : 0;
+        return inputsAreValid() ? circuitsInput % engineersInput : 0;
     };
 
     const inputsAreValid = () => {
         return (
             (circuitsInputSP !== 0 || circuitsInputTP !== 0) &&
-            peopleInput !== 0
+            engineersInput !== 0
         );
     };
 
     const updateCircuitOutputs = (circuitsOutputs, type) => {
         const circuitsOutputElementIds = [
-            `one_person_output_${type}`,
-            `people_output_${type}`,
+            `one_engineer_output_${type}`,
+            `engineers_output_${type}`,
         ];
 
         circuitsOutputElementIds.forEach(
