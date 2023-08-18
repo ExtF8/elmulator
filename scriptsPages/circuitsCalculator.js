@@ -1,7 +1,7 @@
 // Circuits Count Calculations
 (function () {
-    let circuitsInputSP = 0;
-    let circuitsInputTP = 0;
+    let circuitsInputSinglePhase = 0;
+    let circuitsInputThreePhase = 0;
     let engineersInput = 0;
 
     const handleCircuitsInputChanges = (event) => {
@@ -9,11 +9,11 @@
             case 'engineers_input':
                 engineersInput = getCircuitsInputValue(event.target);
                 break;
-            case 'circuits_input_sp':
-                circuitsInputSP = getCircuitsInputValue(event.target);
+            case 'circuits_input_single_phase':
+                circuitsInputSinglePhase = getCircuitsInputValue(event.target);
                 break;
-            case 'circuits_input_tp':
-                circuitsInputTP = getCircuitsInputValue(event.target);
+            case 'circuits_input_three_phase':
+                circuitsInputThreePhase = getCircuitsInputValue(event.target);
                 break;
         }
         calculateCircuitOutputValues();
@@ -28,9 +28,9 @@
     };
 
     const calculateCircuitOutputValues = () => {
-        ['sp', 'tp'].forEach((type) => {
+        ['single_phase', 'three_phase'].forEach((type) => {
             const circuitsInput =
-                type === 'sp' ? circuitsInputSP : circuitsInputTP;
+                type === 'single_phase' ? circuitsInputSinglePhase : circuitsInputThreePhase;
 
             if (circuitsInput === 0) return;
 
@@ -54,7 +54,7 @@
 
     const inputsAreValid = () => {
         return (
-            (circuitsInputSP !== 0 || circuitsInputTP !== 0) &&
+            (circuitsInputSinglePhase !== 0 || circuitsInputThreePhase !== 0) &&
             engineersInput !== 0
         );
     };
