@@ -151,6 +151,11 @@
         return voltageInput !== 0 && zdbInput !== 0;
     };
 
+    /**
+     * Updates the output fields based on the converted impedance values in kA.
+     * @param {number} onePhaseKA - The impedance in kA for single phase.
+     * @param {number} threePhaseKA - The impedance in kA for three phase.
+     */
     const updateOutputsInKA = (onePhaseKA, threePhaseKA) => {
         const outputTypes = [SINGLE_PHASE, THREE_PHASE];
         const values = [onePhaseKA, threePhaseKA];
