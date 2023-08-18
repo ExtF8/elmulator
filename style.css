@@ -190,6 +190,7 @@ footer {
     width: 100%;
     padding: 0 10px;
 }
+
 #engineers-input {
     display: flex;
     justify-content: center;
@@ -200,7 +201,7 @@ footer {
     margin-left: 18%;
 }
 
-.engineers-inputs p {
+.engineers-inputs label {
     display: flex;
     justify-content: flex-start;
 }
@@ -222,14 +223,23 @@ footer {
     padding: 0 10px;
 }
 
-.circuits-inputs p {
+.circuits-inputs label {
     align-self: flex-end;
     margin-bottom: 2.5px;
 }
 
+
 .phases-container {
     display: flex;
-    flex-direction: row;
-    gap: 5px;
+    column-gap: 4px;
+}
 
+.phases {
+    display: flex;
+    flex-direction: column;
+}
+
+.phases label {
+    display: flex;
+    align-self: center;
 }
