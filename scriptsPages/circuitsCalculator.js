@@ -1,73 +1,126 @@
-// Circuits Count Calculations
+/**
+ * Module for calculating circuit count
+ */
 (function () {
-    let circuitsInputSinglePhase = 0;
-    let circuitsInputThreePhase = 0;
-    let engineersInput = 0;
+    // Constants
+    const SINGLE_PHASE = 'single_phase';
+    const THREE_PHASE = 'three_phase';
 
-    const handleCircuitsInputChanges = (event) => {
-        switch (event.target.id) {
-            case 'engineers_input':
-                engineersInput = getCircuitsInputValue(event.target);
+    let singlePhaseInput = 0;
+    let threePhaseInput = 0;
+    let engineersCount = 0;
+
+    /**
+     * Handles changes to the circuit input fields, calculates outputs and updates outputs
+     * @param {Event} event - The input event
+     */
+    const handleInputChanges = (event) => {
+        const value = getInputValue(event.target);
+        const inputType = event.target.getAttribute('data-input-type');
+
+        switch (inputType) {
+            case 'engineers':
+                engineersCount = value;
                 break;
-            case 'circuits_input_single_phase':
-                circuitsInputSinglePhase = getCircuitsInputValue(event.target);
+            case SINGLE_PHASE:
+                singlePhaseInput = value;
                 break;
-            case 'circuits_input_three_phase':
-                circuitsInputThreePhase = getCircuitsInputValue(event.target);
+            case THREE_PHASE:
+                threePhaseInput = value;
                 break;
         }
-        calculateCircuitOutputValues();
+
+        if (areInputsValid()) {
+            const calculatedOutputs = calculateOutputs();
+            updateOutputs(calculatedOutputs);
+        }
     };
 
     document
         .querySelector('.circuits-container')
-        .addEventListener('input', handleCircuitsInputChanges);
+        .addEventListener('input', handleInputChanges);
 
-    const getCircuitsInputValue = (element) => {
+    /**
+     * Retrieves the numerical value from an input element
+     * @param {HTMLInputElement} element - The input element
+     * @returns {number} - The numerical value of the input
+     */
+    const getInputValue = (element) => {
         return Number(element.value);
     };
 
-    const calculateCircuitOutputValues = () => {
-        ['single_phase', 'three_phase'].forEach((type) => {
-            const circuitsInput =
-                type === 'single_phase' ? circuitsInputSinglePhase : circuitsInputThreePhase;
+    /**
+     * Calculate the outputs based on current inputs
+     * @returns {Object} - An object containing the calculated outputs for single and three phase
+     */
+    const calculateOutputs = () => {
+        let outputs = {
+            [SINGLE_PHASE]: [],
+            [THREE_PHASE]: [],
+        };
 
-            if (circuitsInput === 0) return;
+        [SINGLE_PHASE, THREE_PHASE].forEach((type) => {
+            const input =
+                type === SINGLE_PHASE ? singlePhaseInput : threePhaseInput;
 
-            const circuitsPerEngineer = calculateCircuitsPerEngineer(circuitsInput);
-            const remainder = calculateRemainder(circuitsInput);
+            if (input !== 0) {
+                const { perEngineer, remainder } =
+                    calculateDivisionResults(input);
 
-            const forOneEngineer = circuitsPerEngineer + remainder;
-            const forOthers = circuitsPerEngineer;
+                const forOneEngineer = perEngineer + remainder;
+                const forOthers = perEngineer;
 
-            updateCircuitOutputs([forOneEngineer, forOthers], type);
+                outputs[type] = [forOneEngineer, forOthers];
+            }
+        });
+
+        return outputs;
+    };
+
+    /**
+     * Checks if the input values are valid
+     * @returns {boolean} - True if valid
+     */
+    const areInputsValid = () => {
+        return (singlePhaseInput || threePhaseInput) && engineersCount;
+    };
+
+    /**
+     * Calculates the number of circuits per engineer and the remainder
+     * Assumes inputs have already been validated
+     * @param {number} input - The number of circuits
+     * @returns {Object} - An object containing the number of circuits per engineer and the remainder
+     */
+    const calculateDivisionResults = (input) => {
+        const perEngineer = Math.floor(input / engineersCount);
+        const remainder = input % engineersCount;
+        return { perEngineer, remainder };
+    };
+
+    /**
+     * Updates the output fields based on the calculated values
+     * @param {Object} outputs - The calculated outputs for single and three phase
+     */
+    const updateOutputs = (outputs) => {
+        [SINGLE_PHASE, THREE_PHASE].forEach((type) => {
+            if (outputs[type].length) {
+                updateOutputsForType(outputs[type], type);
+            }
         });
     };
 
-    const calculateCircuitsPerEngineer = (circuitsInput) => {
-        return inputsAreValid() ? Math.floor(circuitsInput / engineersInput) : 0;
-    };
-
-    const calculateRemainder = (circuitsInput) => {
-        return inputsAreValid() ? circuitsInput % engineersInput : 0;
-    };
-
-    const inputsAreValid = () => {
-        return (
-            (circuitsInputSinglePhase !== 0 || circuitsInputThreePhase !== 0) &&
-            engineersInput !== 0
+    /**
+     * Updated the output fields for a specific type (single or three phase)
+     * @param {number[]} outputs - The output values
+     * @param {string} type - The type of circuit (single phase or three phase)
+     */
+    const updateOutputsForType = (outputs, type) => {
+        const outputElements = document.querySelectorAll(
+            `[data-output-type='${type}']`
         );
-    };
 
-    const updateCircuitOutputs = (circuitsOutputs, type) => {
-        const circuitsOutputElementIds = [
-            `one_engineer_output_${type}`,
-            `engineers_output_${type}`,
-        ];
-
-        circuitsOutputElementIds.forEach(
-            (id, index) =>
-                (document.getElementById(id).value = circuitsOutputs[index])
-        );
+        outputElements.forEach((element, index) => {
+            element.value = outputs[index];
+        });
     };
 })();
