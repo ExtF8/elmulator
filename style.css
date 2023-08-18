@@ -93,10 +93,11 @@ footer {
 #pages_button_container {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     margin: 8px auto;
-    width: 100%;
+    /* width: 100%; */
     height: 30px;
+    gap: 20px;
 }
 
 #pages_container {
@@ -145,19 +146,25 @@ footer {
 }
 
 /* Impedance styling parameters */
-.impedance-input {
+.impedance-input,
+.impedance-outputs {
     display: flex;
     align-items: center;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-evenly;
     gap: 10px;
-    padding: 0 4px;
+    margin: 4px
 }
 
 .impedance-container input {
     width: 100px;
 }
 
+/* {
+    display: flex;
+
+} */
+.impedance-input-container,
 .impedance-output-container {
     display: flex;
     align-items: center;
@@ -165,22 +172,13 @@ footer {
     padding-top: 20px;
 }
 
-.impedance-outputs {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: space-evenly;
-}
-
-.impedance-outputs input {
-    margin: 4px
-}
 
 /* Circuits Count styling parameters */
 .circuits-container {
     display: flex;
+    align-items: center;
     flex-direction: column;
-    width: 100%;
+    /* width: 100%; */
     padding: 0 10px;
 }
 
@@ -197,9 +195,6 @@ footer {
     width: 100%;
 }
 
-#engineers-input input {
-    margin-left: 18%;
-}
 
 .engineers-inputs label {
     display: flex;
@@ -226,6 +221,12 @@ footer {
 .circuits-inputs label {
     align-self: flex-end;
     margin-bottom: 2.5px;
+}
+
+.circuits-outputs label,
+.circuits-inputs label,
+.engineers-inputs label {
+    margin: 0 5px;
 }
 
 
