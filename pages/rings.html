@@ -4,28 +4,49 @@
     <!-- input -->
     <h2>Rings</h2>
     <div class="rings-input-container">
+        <label for="rings_input">Input Resistance</label>
         <input
             type="number"
             id="rings_input"
+            data-input-type="r1"
             placeholder="input r1"
-            size="50"
         />
     </div>
     <div class="rings-output-container">
         <!-- outputs 1 and 2 -->
         <div class="rings-outputs">
-            <p>x1.67 r2</p>
-            <input type="number" id="rings_output1" readonly />
-            <p>x2.67 r2</p>
-            <input type="number" id="rings_output2" readonly />
+            <label for="rings_output1">x1.67 r2</label>
+            <input
+                type="number"
+                id="rings_output1"
+                data-input-type="r2_multiplier_1"
+                readonly
+            />
+            <label for="rings_output2">x2.67 r2</label>
+            <input
+                type="number"
+                id="rings_output2"
+                data-input-type="r2_multiplier_2"
+                readonly
+            />
         </div>
 
         <!-- outputs 3 and 4 -->
         <div class="rings-outputs">
-            <p>R1+R2</p>
-            <input type="number" id="rings_output3" readonly />
-            <p>R1+R2</p>
-            <input type="number" id="rings_output4" readonly />
+            <label for="rings_output3">R1+R2</label>
+            <input
+                type="number"
+                id="rings_output3"
+                data-input-type="r_sum_1"
+                readonly
+            />
+            <label for="rings_output4">R1+R2</label>
+            <input
+                type="number"
+                id="rings_output4"
+                data-input-type="r_sum_2"
+                readonly
+            />
         </div>
     </div>
 </div>
