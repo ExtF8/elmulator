@@ -2,31 +2,46 @@
 
 <div class="impedance-container">
     <h2>Impedance</h2>
-    <!-- input -->
+    <!-- input section-->
     <div class="impedance-input">
         <div class="voltage-input-container">
-            <p>input Voltage</p>
+            <label for="voltage_input">Input Voltage</label>
             <input
                 type="number"
                 id="voltage_input"
+                data-input-type="voltage"
                 placeholder="200-260"
-                size="50"
             />
         </div>
         <div class="zdb-input-container">
-            <p>input Zdb</p>
-            <input type="number" id="zdb_input" placeholder="0.01" size="50" />
+            <label for="zdb_input">Input Zdb</label>
+            <input
+                type="number"
+                id="zdb_input"
+                data-input-type="zdb"
+                placeholder="0.01"
+            />
         </div>
     </div>
+    <!-- output section-->
     <div class="impedance-output-container">
-        <!-- outputs 1 and 2 -->
         <div class="impedance-outputs">
-            <p>L1 Ipf</p>
-            <input type="number" id="one_phase_ipf_output_ka" readonly />
+            <label>L1 Ipf</label>
+            <input
+                type="number"
+                id="one_phase_ipf_output_ka"
+                data-output-type="one_phase_ipf"
+                readonly
+            />
         </div>
         <div class="impedance-outputs">
-            <p>TP Ipf</p>
-            <input type="number" id="three_phase_ipf_output_ka" readonly />
+            <label>TP Ipf</label>
+            <input
+                type="number"
+                id="three_phase_ipf_output_ka"
+                data-output-type="three_phase_ipf"
+                readonly
+            />
         </div>
     </div>
 </div>
