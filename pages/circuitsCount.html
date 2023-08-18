@@ -5,35 +5,37 @@
     <h2>Circuits</h2>
     <div class="circuits-input-container">
         <div class="engineers-inputs">
-            <p>Engineers</p>
+            <label for="engineers-input">Engineers</label>
             <div id="engineers-input">
                 <input
                     type="number"
                     id="engineers_input"
+                    data-input-type="engineers"
                     placeholder="how many"
-                    size="50"
                 />
             </div>
         </div>
         <div class="circuits-inputs">
-            <p>Circuits</p>
+            <label>Circuits</label>
             <div class="phases-container">
                 <div class="phases">
-                    <p id="single_phase">SP</p>
+                    <label for="circuits_input_single_phase">SP</label>
                     <input
                         type="number"
                         id="circuits_input_single_phase"
+                        data-input-type="single_phase"
                         placeholder="circuits"
-                        size="50"
+
                     />
                 </div>
                 <div class="phases">
-                    <p>TP</p>
+                    <label for="circuits_input_three_phase">TP</label>
                     <input
                         type="number"
                         id="circuits_input_three_phase"
+                        data-input-type="three_phase"
                         placeholder="circuits"
-                        size="50"
+
                     />
                 </div>
             </div>
@@ -42,17 +44,37 @@
     <div class="circuits-outputs-container">
         <!-- output 1 and 2 -->
         <div class="circuits-outputs">
-            <p>Top dog</p>
+            <label>Top Dog</label>
             <div>
-                <input type="number" id="one_engineer_output_single_phase" readonly />
-                <input type="number" id="one_engineer_output_three_phase" readonly />
+                <input
+                    type="number"
+                    id="one_engineer_output_single_phase"
+                    data-output-type="single_phase"
+                    readonly
+                />
+                <input
+                    type="number"
+                    id="one_engineer_output_three_phase"
+                    data-output-type="three_phase"
+                    readonly
+                />
             </div>
         </div>
         <div class="circuits-outputs">
-            <p>Underdogs</p>
+            <label>Underdogs</label>
             <div>
-                <input type="number" id="engineers_output_single_phase" readonly />
-                <input type="number" id="engineers_output_three_phase" readonly />
+                <input
+                    type="number"
+                    id="engineers_output_single_phase"
+                    data-output-type="single_phase"
+                    readonly
+                />
+                <input
+                    type="number"
+                    id="engineers_output_three_phase"
+                    data-output-type="three_phase"
+                    readonly
+                />
             </div>
         </div>
     </div>
