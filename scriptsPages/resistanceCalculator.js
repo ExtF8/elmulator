@@ -23,7 +23,7 @@
         const value = getInputValue(event.target);
         const inputType = event.target.getAttribute('data-input-type');
 
-        if (inputType === 'r1' && isValidInput(value)) {
+        if (inputType === 'r1' && isInputValid(value)) {
             processResistanceCalculations(value);
         }
     };
@@ -42,7 +42,7 @@
      * @param {number} value - The resistance input value
      * @returns {boolean} - True if valid
      */
-    const isValidInput = (value) => {
+    const isInputValid = (value) => {
         return typeof value === 'number' && value > 0;
     };
 
