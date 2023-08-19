@@ -1,31 +1,43 @@
-// Modules to control application life and create native browser window
+/**
+ * Module for Electron Main Process Management
+ */
+
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
+// Constants
+const DEFAULT_WINDOW_DIMENSIONS = {
+    width: 280,
+    height: 460,
+};
+const ICON_PATH = path.join(__dirname, '/images/icons/icon.ico');
+const PRELOAD_SCRIPT_PATH = path.join(__dirname, 'renderer.js');
+
+/**
+ * Crates the main application window
+ */
 const createWindow = () => {
-    // Create the browser window.
-    // 280 × 460
     const mainWindow = new BrowserWindow({
-        icon: __dirname + '/images/icons/icon.ico',
-        width: 280,
-        height: 460,
+        icon: ICON_PATH,
+        width: DEFAULT_WINDOW_DIMENSIONS.width,
+        height: DEFAULT_WINDOW_DIMENSIONS.height,
         webPreferences: {
-            preload: path.join(__dirname, 'renderer.js'),
+            preload: PRELOAD_SCRIPT_PATH,
         },
         alwaysOnTop: true,
     });
 
-    // and load the index.html of the app.
     mainWindow.loadFile('index.html');
 
-    // Open the DevTools.
+    // Uncomment to open the DevTools by default.
     // mainWindow.webContents.openDevTools()
 };
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+/**
+ * Initializes the application after Electron readiness
+ * Some APIs can only be used after this event occurs
+ */
+const initializeApp = () => {
     createWindow();
 
     app.on('activate', () => {
@@ -33,14 +45,16 @@ app.whenReady().then(() => {
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
-});
+};
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// Start the app when Electron is ready
+app.whenReady().then(initializeApp);
+
+// Handle window closing behavior
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// Additional main process code can be added here or in separate modules
