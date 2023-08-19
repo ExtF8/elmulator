@@ -128,7 +128,18 @@
         );
 
         outputElements.forEach((element, index) => {
-            element.value = circuitsOutputs[index];
+            // Ensure the value is defined and is a number before updating
+            if (
+                typeof circuitsOutputs[index] !== 'undefined' &&
+                !isNaN(circuitsOutputs[index])
+            ) {
+                element.value = circuitsOutputs[index];
+            } else {
+                console.warn(
+                    `Invalid value for ${type}:`,
+                    circuitsOutputs[index]
+                );
+            }
         });
     };
 
