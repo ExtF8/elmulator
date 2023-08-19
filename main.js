@@ -32,12 +32,12 @@ const createWindow = () => {
     // Uncomment to open the DevTools by default.
     // mainWindow.webContents.openDevTools()
 };
-
 /**
- * Initializes the application after Electron readiness
- * Some APIs can only be used after this event occurs
+ * This method will be called when Electron has finished
+ * initialization and is ready to create browser windows.
+ * Some APIs can only be used after this event occurs.
  */
-const initializeApp = () => {
+app.whenReady().then(() => {
     createWindow();
 
     app.on('activate', () => {
@@ -45,10 +45,7 @@ const initializeApp = () => {
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
-};
-
-// Start the app when Electron is ready
-app.whenReady().then(initializeApp);
+});
 
 // Handle window closing behavior
 app.on('window-all-closed', () => {
