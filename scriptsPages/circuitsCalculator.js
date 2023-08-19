@@ -6,6 +6,11 @@
     const SINGLE_PHASE = 'single_phase';
     const THREE_PHASE = 'three_phase';
 
+    const circuitsOutputs = {
+        [SINGLE_PHASE]: [],
+        [THREE_PHASE]: [],
+    };
+
     let singlePhaseInput = 0;
     let threePhaseInput = 0;
     let engineersCount = 0;
@@ -15,8 +20,20 @@
      * @param {Event} event - The input event
      */
     const handleInputChanges = (event) => {
-        const value = getInputValue(event.target);
-        const inputType = event.target.getAttribute('data-input-type');
+        updateInputValues(event.target);
+
+        if (isInputValid(event)) {
+            processCircuitsCalculations();
+        }
+    };
+
+    /**
+     * Updates the input value based on the provided element
+     * @param {HTMLElement} element - The input element
+     */
+    const updateInputValues = (element) => {
+        const value = getInputValue(element);
+        const inputType = element.getAttribute('data-input-type');
 
         switch (inputType) {
             case 'engineers':
@@ -29,16 +46,7 @@
                 threePhaseInput = value;
                 break;
         }
-
-        if (areInputsValid()) {
-            const calculatedOutputs = calculateOutputs();
-            updateOutputs(calculatedOutputs);
-        }
     };
-
-    document
-        .querySelector('.circuits-container')
-        .addEventListener('input', handleInputChanges);
 
     /**
      * Retrieves the numerical value from an input element
@@ -46,49 +54,52 @@
      * @returns {number} - The numerical value of the input
      */
     const getInputValue = (element) => {
-        return Number(element.value);
+        return Number(element.value) || 0;
     };
 
     /**
-     * Calculate the outputs based on current inputs
-     * @returns {Object} - An object containing the calculated outputs for single and three phase
+     * Ensures that input value is a positive number
      */
-    const calculateOutputs = () => {
-        let outputs = {
-            [SINGLE_PHASE]: [],
-            [THREE_PHASE]: [],
-        };
-
-        [SINGLE_PHASE, THREE_PHASE].forEach((type) => {
-            const input =
-                type === SINGLE_PHASE ? singlePhaseInput : threePhaseInput;
-
-            if (input !== 0) {
-                const { perEngineer, remainder } =
-                    calculateDivisionResults(input);
-
-                const forOneEngineer = perEngineer + remainder;
-                const forOthers = perEngineer;
-
-                outputs[type] = [forOneEngineer, forOthers];
-            }
-        });
-
-        return outputs;
+    const isInputValid = (event) => {
+        const value = getInputValue(event.target);
+        return typeof value === 'number' && value > 0;
     };
 
     /**
-     * Checks if the input values are valid
-     * @returns {boolean} - True if valid
+     * Handles the entire circuits calculations workflow
      */
-    const areInputsValid = () => {
-        return (singlePhaseInput || threePhaseInput) && engineersCount;
+    const processCircuitsCalculations = () => {
+        calculateCircuitsOutputs();
+        updateCircuitsOutputs();
+    };
+
+    /**
+     * Calculates the outputs based on current inputs
+     */
+    const calculateCircuitsOutputs = () => {
+        calculateOutputForType(SINGLE_PHASE, singlePhaseInput);
+        calculateOutputForType(THREE_PHASE, threePhaseInput);
+    };
+
+    /**
+     * Calculates the output for a specific type
+     * @param {string} type - The type of circuit (single or three phase)
+     * @param {number} input - The number of circuits
+     */
+    const calculateOutputForType = (type, input) => {
+        if (input !== 0) {
+            const { perEngineer, remainder } = calculateDivisionResults(input);
+
+            const forOneEngineer = perEngineer + remainder;
+            const forOthers = perEngineer;
+
+            circuitsOutputs[type] = [forOneEngineer, forOthers];
+        }
     };
 
     /**
      * Calculates the number of circuits per engineer and the remainder
-     * Assumes inputs have already been validated
-     * @param {number} input - The number of circuits
+     * @param {number} input - The total number of circuits
      * @returns {Object} - An object containing the number of circuits per engineer and the remainder
      */
     const calculateDivisionResults = (input) => {
@@ -98,29 +109,30 @@
     };
 
     /**
-     * Updates the output fields based on the calculated values
-     * @param {Object} outputs - The calculated outputs for single and three phase
+     * Updates the output object values based on the calculated values
      */
-    const updateOutputs = (outputs) => {
-        [SINGLE_PHASE, THREE_PHASE].forEach((type) => {
-            if (outputs[type].length) {
-                updateOutputsForType(outputs[type], type);
-            }
+    const updateCircuitsOutputs = () => {
+        Object.keys(circuitsOutputs).forEach((type) => {
+            updateOutputsForType(circuitsOutputs[type], type);
         });
     };
 
     /**
      * Updated the output fields for a specific type (single or three phase)
      * @param {number[]} outputs - The output values
-     * @param {string} type - The type of circuit (single phase or three phase)
+     * @param {string} type - The type of circuit (single or three phase)
      */
-    const updateOutputsForType = (outputs, type) => {
+    const updateOutputsForType = (circuitsOutputs, type) => {
         const outputElements = document.querySelectorAll(
             `[data-output-type='${type}']`
         );
 
         outputElements.forEach((element, index) => {
-            element.value = outputs[index];
+            element.value = circuitsOutputs[index];
         });
     };
+
+    document
+        .querySelector('.circuits-container')
+        .addEventListener('input', handleInputChanges);
 })();
