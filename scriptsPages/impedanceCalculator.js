@@ -1,17 +1,26 @@
 /**
- * Module External Impedance Calculations
+ * Module for External Impedance Calculations
  */
 (function () {
     // Constants
     const DEFAULT_VOLTAGE = 240;
-    const SINGLE_PHASE = 'single_phase_ipf';
-    const THREE_PHASE = 'three_phase_ipf';
+    const KA_CONVERSION_FACTOR = 1000;
+    const ZDB_THRESHOLD = 5;
+    const HIGH_PRECISION_DECIMALS = 4;
+    const LOW_PRECISION_DECIMALS = 2;
+
+    const impedanceOutputs = {
+        onePhase: 0,
+        threePhase: 0,
+        single_phase_ipf: 0,
+        three_phase_ipf: 0,
+    };
 
     let voltageInput = 0;
     let zdbInput = 0;
 
     /**
-     * Handles changes to the impedance input fields, calculates outputs, and updates output
+     * Handles changes to the impedance input and initiates the processing of impedance calculations
      * @param {Event} event - The input event
      */
     const handleInputChanges = (event) => {
@@ -21,28 +30,9 @@
             setDefaultVoltageInput();
         }
 
-        processImpedanceCalculations();
-    };
-
-    document
-        .querySelector('.impedance-container')
-        .addEventListener('input', handleInputChanges);
-
-    /**
-     * Handles the entire impedance calculations workflow
-     *
-     * This function ensures that:
-     * 1. Inputs are validated for accuracy.
-     * 2. Raw impedance values are calculated.
-     * 3. Raw values are converted to kilo amperes (kA) from amperes (A)
-     * 4. The UI is updated with processed values.
-     */
-    const processImpedanceCalculations = () => {
-        if (!areInputsValid()) return;
-
-        const { onePhase, threePhase } = calculateOutputValues();
-        const { onePhaseKA, threePhaseKA } = convertToKA(onePhase, threePhase);
-        updateOutputsInKA(onePhaseKA, threePhaseKA);
+        if (isInputValid(event)) {
+            processImpedanceCalculations();
+        }
     };
 
     /**
@@ -64,14 +54,28 @@
     };
 
     /**
-     * Checks if only one input is provided
+     * Retrieves the numerical value from an input element
+     * @param {HTMLInputElement} element - The input element
+     * @returns {number} - The numerical value of the input
+     */
+    const getInputValue = (element) => {
+        return Number(element.value) || 0;
+    };
+
+    /**
+     * Ensures that input value is a positive number
+     */
+    const isInputValid = (event) => {
+        const value = getInputValue(event.target);
+        return typeof value === 'number' && value > 0;
+    };
+
+    /**
+     * Checks if either voltage or zdb input is provided, but not both
      * @returns {boolean} - True if only one input is provided
      */
     const onlyOneInputProvided = () => {
-        return (
-            (voltageInput === 0 && zdbInput !== 0) ||
-            (zdbInput === 0 && voltageInput !== 0)
-        );
+        return !voltageInput && zdbInput;
     };
 
     /**
@@ -89,39 +93,34 @@
     };
 
     /**
-     * Retrieves the numerical value from an input element
-     * @param {HTMLInputElement} element - The input element
-     * @returns {number} - The numerical value of the input
+     * Handles the entire impedance calculations workflow
      */
-    const getInputValue = (element) => {
-        return Number(element.value);
+    const processImpedanceCalculations = () => {
+        calculateOutputValues();
+        convertToKA();
+        updateOutputsInKA();
     };
 
     /**
      * Calculates the impedance output values in amperes based on the inputs
-     * @returns {Object} - The calculated impedance outputs for single phase and three phase
      */
     const calculateOutputValues = () => {
-        const onePhase = voltageInput / zdbInput;
-        const threePhase = onePhase * 2;
-
-        return { onePhase, threePhase };
+        impedanceOutputs.onePhase = voltageInput / zdbInput;
+        impedanceOutputs.threePhase = impedanceOutputs.onePhase * 2;
     };
 
     /**
      * Converts impedance output values to kilo amperes and returns them
-     * @param {number} onePhase - The calculated impedance for single phase
-     * @param {number} threePhase - The calculated impedance for three phase
-     * @returns {Object} - The impedance values in kilo amperes for single and three phase
      */
-    const convertToKA = (onePhase, threePhase) => {
-        const onePhaseKA = roundToDecimal(onePhase / 1000, getDecimalPlaces());
-        const threePhaseKA = roundToDecimal(
-            threePhase / 1000,
+    const convertToKA = () => {
+        impedanceOutputs.single_phase_ipf = roundToDecimal(
+            impedanceOutputs.onePhase / KA_CONVERSION_FACTOR,
             getDecimalPlaces()
         );
-
-        return { onePhaseKA, threePhaseKA };
+        impedanceOutputs.three_phase_ipf = roundToDecimal(
+            impedanceOutputs.threePhase / KA_CONVERSION_FACTOR,
+            getDecimalPlaces()
+        );
     };
 
     /**
@@ -129,7 +128,9 @@
      * @returns {number} - Number of decimal places
      */
     const getDecimalPlaces = () => {
-        return zdbInput >= 5 ? 4 : 2;
+        return zdbInput >= ZDB_THRESHOLD
+            ? HIGH_PRECISION_DECIMALS
+            : LOW_PRECISION_DECIMALS;
     };
 
     /**
@@ -144,29 +145,21 @@
     };
 
     /**
-     * Checks if the input values are valid
-     * @returns {boolean} - True if valid
-     */
-    const areInputsValid = () => {
-        return voltageInput !== 0 && zdbInput !== 0;
-    };
-
-    /**
      * Updates the output fields based on the converted impedance values in kA.
-     * @param {number} onePhaseKA - The impedance in kA for single phase.
-     * @param {number} threePhaseKA - The impedance in kA for three phase.
      */
-    const updateOutputsInKA = (onePhaseKA, threePhaseKA) => {
-        const outputTypes = [SINGLE_PHASE, THREE_PHASE];
-        const values = [onePhaseKA, threePhaseKA];
-
-        outputTypes.forEach((type, index) => {
-            const outputElement = document.querySelector(
+    const updateOutputsInKA = () => {
+        const outputElements = {};
+        Object.keys(impedanceOutputs).forEach((type) => {
+            outputElements[type] = document.querySelector(
                 `[data-output-type='${type}']`
             );
-            if (outputElement) {
-                outputElement.value = values[index];
+            if (outputElements[type]) {
+                outputElements[type].value = impedanceOutputs[type];
             }
         });
     };
+
+    document
+        .querySelector('.impedance-container')
+        .addEventListener('input', handleInputChanges);
 })();
