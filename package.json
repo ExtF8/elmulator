@@ -1,6 +1,6 @@
 {
   "name": "elmulator",
-  "version": "1.6.4.1",
+  "version": "1.6.5",
   "description": "calculator for Elmar",
   "main": "main.js",
   "scripts": {
