@@ -1,28 +1,59 @@
 {
-  "name": "elmulator",
-  "version": "1.7.1",
-  "description": "calculator for Elmar",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
-  },
-  "author": "ExtF8",
-  "license": "MIT",
-  "devDependencies": {
-    "@electron-forge/cli": "^7.2.0",
-    "@electron-forge/maker-deb": "^7.2.0",
-    "@electron-forge/maker-rpm": "^7.2.0",
-    "@electron-forge/maker-squirrel": "^7.2.0",
-    "@electron-forge/maker-zip": "^7.2.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
-    "electron": "^28.2.2",
-    "electron-packager": "^17.1.2",
-    "electron-winstaller": "^5.2.2"
-  },
-  "dependencies": {
-    "asar": "^3.2.0",
-    "electron-squirrel-startup": "^1.0.0"
-  }
+    "name": "elmulator",
+    "version": "1.7.1",
+    "description": "calculator for Elmar",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron-forge start",
+        "package": "electron-forge package",
+        "make": "electron-forge make",
+        "dist": "electron-builder --linux snap"
+    },
+    "build": {
+        "appId": "com.extfield8.elmulator",
+        "productName": "Elmulator",
+        "linux": {
+            "icon": "./images/icons/32x32.png",
+            "category": "Utility",
+            "target": [
+                "snap"
+            ],
+            "electronLanguages": [
+                "en-US"
+            ]
+        },
+        "snap": {
+            "confinement": "strict",
+            "summary": "Calculator for Elmar",
+            "grade": "stable",
+            "base": "core20"
+        },
+        "extraMetadata": {
+            "author": "ExtF8"
+        },
+        "copyright": "Copyright © 2024 ${author}",
+        "win": {
+            "icon": null
+        },
+        "mac": {
+            "icon": null
+        }
+    },
+    "author": "ExtF8",
+    "license": "MIT",
+    "devDependencies": {
+        "@electron-forge/cli": "^7.2.0",
+        "@electron-forge/maker-deb": "^7.2.0",
+        "@electron-forge/maker-rpm": "^7.2.0",
+        "@electron-forge/maker-squirrel": "^7.2.0",
+        "@electron-forge/maker-zip": "^7.2.0",
+        "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
+        "electron": "^28.2.2",
+        "electron-builder": "^24.9.1",
+        "electron-packager": "^17.1.2"
+    },
+    "dependencies": {
+        "asar": "^3.2.0",
+        "electron-squirrel-startup": "^1.0.0"
+    }
 }
