@@ -2,12 +2,11 @@
     "name": "elmulator",
     "version": "1.7.3",
     "description": "calculator for Elmar",
+    "author": "ExtF8",
     "main": "main.js",
     "scripts": {
-        "start": "electron-forge start",
-        "package": "electron-forge package",
-        "make": "electron-forge make",
-        "dist": "electron-builder --linux snap"
+        "start": "electron .",
+        "build": "electron-builder --linux --win"
     },
     "build": {
         "appId": "com.extfield8.elmulator",
@@ -28,34 +27,24 @@
             "grade": "stable",
             "base": "core20"
         },
-        "extraMetadata": {
-            "author": "ExtF8"
-        },
-        "copyright": "Copyright © 2024 ${author}",
         "win": {
-            "icon": null
+            "target": "portable",
+            "electronLanguages": [
+                "en-US"
+            ],
+            "icon": "./images/icons/icon.ico",
+            "asar": true,
+            "compression": "maximum"
         },
-        "mac": {
-            "icon": null
-        }
+        "copyright": "Copyright © 2024 ${author}"
     },
-    "author": "ExtF8",
     "license": "MIT",
     "devDependencies": {
-        "@electron-forge/cli": "^7.2.0",
-        "@electron-forge/maker-deb": "^7.2.0",
-        "@electron-forge/maker-rpm": "^7.2.0",
-        "@electron-forge/maker-squirrel": "^7.2.0",
-        "@electron-forge/maker-zip": "^7.2.0",
-        "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
         "electron": "^30.0.3",
-        "electron-builder": "^24.9.1",
-        "electron-packager": "^17.1.2"
+        "electron-builder": "^24.13.3"
     },
     "dependencies": {
-        "@electron/asar": "github:electron/asar",
-        "@electron/packager": "github:electron/packager",
-        "asar": "^3.2.0",
-        "electron-squirrel-startup": "^1.0.0"
+        "@electron/asar": "^3.2.10",
+        "@electron/packager": "^18.3.2"
     }
 }
