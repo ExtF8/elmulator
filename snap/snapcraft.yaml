@@ -1,0 +1,23 @@
+name: elmulator
+base: core20
+version: '1.8.0'
+summary: Simplifies electrical calculations and optimizes circuit distribution among engineers.
+description: |
+  This app provides essential calculations related to resistance, impedance, and circuit distribution.
+
+  Rings Resistance Calculations:
+  Calculate resistance values for various scenarios by inputting resistance values and reviewing calculated outputs in real-time.
+
+  External Impedance Calculations:
+  Determine impedance in kilo-amperes based on provided voltage and impedance values, with the option for default values for missing inputs.
+
+  Module for Calculating Circuit Count:
+  Streamline the distribution of circuit work among engineers by inputting the number of engineers and circuits, and the app calculates the optimal distribution for single-phase and three-phase circuits.
+
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+
+parts:
+  my-part:
+    # See 'snapcraft plugins'
+    plugin: nil
