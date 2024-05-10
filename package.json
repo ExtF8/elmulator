@@ -1,6 +1,6 @@
 {
     "name": "elmulator",
-    "version": "1.7.3",
+    "version": "1.8.0",
     "description": "calculator for Elmar",
     "author": "ExtF8",
     "main": "main.js",
