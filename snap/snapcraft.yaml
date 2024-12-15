@@ -1,6 +1,6 @@
 name: elmulator
 base: core20
-version: '1.8.0'
+version: '1.8.2'
 summary: Simplifies electrical calculations and optimizes circuit distribution among engineers.
 description: |
   This app provides essential calculations related to resistance, impedance, and circuit distribution.
