@@ -4,10 +4,12 @@ This document provides an overview and usage guide for the three main modules: "
 
 ## 1. Rings Resistance Calculations
 
-### Overview:
+### Overview
+
 The "Rings Resistance Calculations" module calculates resistance values based on a given input. It employs predefined multipliers to determine the resistance for different scenarios, producing output values rounded to the desired precision.
 
-### Usage Guide:
+### Usage Guide
+
 1. **Input Resistance Value**: Provide the resistance value (referred to as `r1`).
 2. **Review Calculated Outputs**: The module will automatically generate the following outputs:
    - **R2 Multiplier 1**: The calculated resistance using the first multiplier.
@@ -21,10 +23,12 @@ The "Rings Resistance Calculations" module calculates resistance values based on
 
 ## 2. External Impedance Calculations
 
-### Overview:
+### Overview
+
 The "External Impedance Calculations" module focuses on determining the impedance in kilo amperes based on provided voltage and impedance values. If only one value is provided, the module assumes default values for missing inputs to produce results.
 
-### Usage Guide:
+### Usage Guide
+
 1. **Provide Inputs**:
    - **Voltage**: Enter the voltage value. If not provided, a default value will be assumed.
    - **Zdb (Impedance Value)**: Provide the impedance value.
@@ -39,10 +43,12 @@ The "External Impedance Calculations" module focuses on determining the impedanc
 
 ## 3. Module for calculating circuit count
 
-### Overview:
+### Overview
+
 The module is designed to help distribute circuit work among engineers. You input the number of engineers and the number of circuits (either single phase or three phase). The module then calculates how the circuits should be distributed among the engineers.
 
-### Usage Guide:
+### Usage Guide
+
 1. **Provide Inputs**:
    - **Number of Engineers**: Enter the number of engineers available for the circuit distribution.
    - **Number of Single-Phase Circuits (SP)**: Provide the number of single-phase circuits that need to be distributed.
