@@ -28,7 +28,7 @@
             "base": "core20"
         },
         "win": {
-            "artifactName":"${productName}-${version}-${arch}.${ext}",
+            "artifactName":"Elmulator-${version}-${arch}.${ext}",
             "target": "portable",
             "electronLanguages": [
                 "en-US"
