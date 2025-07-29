@@ -1,9 +1,16 @@
 {
     "name": "elmulator",
-    "version": "1.9.1",
+    "version": "1.9.2-beta-updateTest",
     "description": "calculator for Elmar",
     "author": "ExtF8",
     "main": "main.js",
+    "publish": [
+        {
+            "provider": "github",
+            "owner": "ExtF8",
+            "repo": "https://github.com/ExtF8/elmulator/releases"
+            }
+    ],
     "scripts": {
         "start": "electron .",
         "build": "electron-builder --linux --win"
@@ -28,8 +35,8 @@
             "base": "core20"
         },
         "win": {
-            "artifactName":"Elmulator-${version}-${arch}.${ext}",
-            "target": "portable",
+            "artifactName": "Elmulator-${version}-${arch}.${ext}",
+            "target": "nsis",
             "electronLanguages": [
                 "en-US"
             ],
@@ -42,7 +49,8 @@
     "license": "MIT",
     "devDependencies": {
         "electron": "^30.0.5",
-        "electron-builder": "^24.13.3"
+        "electron-builder": "^24.13.3",
+        "electron-updater": "^6.6.2"
     },
     "dependencies": {
         "@electron/asar": "^3.2.10",
