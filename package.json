@@ -4,9 +4,16 @@
     "description": "calculator for Elmar",
     "author": "ExtF8",
     "main": "main.js",
+    "publish": [
+        {
+            "provider": "github",
+            "owner": "ExtF8",
+            "url": "https://github.com/ExtF8/elmulator/releases/"
+        }
+    ],
     "scripts": {
         "start": "electron .",
-        "build": "electron-builder --linux --win"
+        "build": "rm -rfvd dist/ && electron-builder --linux --win"
     },
     "build": {
         "appId": "com.extfield8.elmulator",
@@ -28,8 +35,8 @@
             "base": "core20"
         },
         "win": {
-            "artifactName":"Elmulator-${version}-${arch}.${ext}",
-            "target": "portable",
+            "artifactName": "Elmulator-${version}-${arch}.${ext}",
+            "target": "nsis",
             "electronLanguages": [
                 "en-US"
             ],
@@ -46,6 +53,8 @@
     },
     "dependencies": {
         "@electron/asar": "^3.2.10",
-        "@electron/packager": "^18.3.2"
+        "@electron/packager": "^18.3.2",
+        "electron-log": "^5.4.1",
+        "electron-updater": "^6.6.2"
     }
 }
