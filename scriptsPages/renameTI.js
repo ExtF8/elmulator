@@ -162,4 +162,85 @@ function sanitizeWindowsName(string) {
         .trim();
 }
 
+/**
+ * Ensure a directory exists (creates it recursively if missing).
+ *
+ * @param {string} dir - Directory path
+ * @returns {Promise<void>}
+ */
+async function ensureDir(dir) {
+    await fs.mkdir(dir, { recursive: true });
+}
+
+/**
+ * List image files (by extension) in a directory.
+ * Supported extensions: jpg, jpeg, png, webp, tif, tiff, bmp (case-insensitive).
+ *
+ * @param {string} dir - Directory to scan
+ * @returns {Promise<string[]>} Full paths to image files
+ */
+async function listImages(dir) {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+
+    return entries
+        .filter(entry => entry.isFile())
+        .map(entry => path.join(dir, entry.name))
+        .filter(path => /\.(jpe?g|png|webp|tiff?|bmp)$/i.test(path));
+}
+
+/**
+ * Find all numeric substrings of length >= minDigits inside a string.
+ * Used to detect candidate reference numbers inside filenames.
+ *
+ * Examples:
+ *      findAllRefsInString("FLIR4179.jpg", 4) -> ["4179"]
+ *      findAllRefsInString("IMG_20240823_41791", 4) -> ["20240823", "41791"]
+ *
+ * @param {string} string - String to scan (e.g., a filename)
+ * @param {number} minDigits - Minimum digits per group
+ * @returns {string[]} All digit groups meeting the minimum length
+ */
+function findAllRefsInString(string, minDigits) {
+    const out = [];
+    const regex = new RegExp(`\\d{${minDigits},}`, 'g');
+    let match;
+
+    while ((match = regex.exec(string)) !== null) {
+        out.push(match[0]);
+    }
+
+    return out;
+}
+
+/**
+ * Given a filename, choose the most plausible reference number by:
+ *  1. Extracting all digit groups (length >= minDigits)
+ *  2. Filtering to those present in PDF's ref set (map keys)
+ *  3. Preferring thr rightmost occurrence in the filename
+ *
+ * @param {string} filePath - The filename or full path to an image
+ * @param {Set<string>} refSet - Set of valid reference keys (full + trimmed)
+ * @param {number} minDigits - Minimum digits to consider in 1. sep
+ * @returns {string|null} The chosen reference string, or null if none match
+ */
+function pickRefFromFileNameAgainstSet(filePath, refSet, minDigits) {
+    const base = path.basename(filePath);
+    const groups = findAllRefsInString(base, minDigits);
+    const present = groups.filter(g => refSet.has(g));
+    if (present.length === 0) {
+        return null;
+    }
+
+    // Prefer the rightmost match (closest to extension is often the correct one)
+    let best = present[0];
+    let bestPos = base.lastIndexOf(best);
+    for (const g of present) {
+        const pos = base.lastIndexOf(g);
+        if (pos > bestPos) {
+            best = g;
+            bestPos = pos;
+        }
+    }
+    return best;
+}
 
