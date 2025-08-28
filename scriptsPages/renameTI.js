@@ -9,7 +9,9 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import pdf from 'pdf-parse';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdf = require('pdf-parse');
 
 /**
  * Parse command line arguments into a configuration object.
@@ -289,7 +291,7 @@ async function renameInPlace(src, newBase) {
  * @returns {Map<string, string>} Map where keys are refs (full and trimmed) and values are names
  */
 function buildRefToNameMapFromPairs(pairs) {
-    const map = Map();
+    const map = new Map();
 
     for (const { ref, trimmedRef, name } of pairs) {
         if (!map.has(ref)) {
@@ -303,3 +305,101 @@ function buildRefToNameMapFromPairs(pairs) {
 
     return map;
 }
+
+/* --------------------------------- Main ---------------------------------- */
+
+/**
+ * Program entry point:
+ *      1. Parse CLI args
+ *      2. Read + split PDF text
+ *      3. Extract {name, ref, trimmedRef} pairs from "<NAME> TI-<REF>" lines
+ *      4. Build ref-name map with both full and trimmed keys
+ *      5. List image files to rename
+ *      6. For each image, pick best matching ref from filename against map keys
+ *      7. Print plan; if --apply, copy or rename accordingly
+ *
+ * Errors are printed clearly and exit codes are set for CI/script usage.
+ */
+(async function main() {
+    const args = parseArgs(process.argv);
+
+    const text = await readPdfText(args.pdfPath);
+    const lines = splitNonEmptyLines(text);
+    const pairs = extractPairsNameTiOnly(lines, args.refDigits);
+
+    if (pairs.length === 0) {
+        console.error('No "<NAME> TI-<REF>" lines found in PDF.');
+        process.exit(1);
+    }
+
+    const refToName = buildRefToNameMapFromPairs(pairs);
+
+    if (args.showMap || args.debug) {
+        console.log(`Found ${pairs.length} TI lines. Ref keys in map`);
+        console.log('', Array.from(refToName.keys()).join(', '));
+    }
+
+    const photos = await listImages(args.photosDir);
+    if (photos.length === 0) {
+        console.error('No images found in --photos directory');
+        process.exit(1);
+    }
+
+    const refSet = new Set(refToName.keys());
+
+    if (args.debug) {
+        console.log('\n[DEBUG] Files & detected digit groups:');
+        for (const f of photos) {
+            const groups = findAllRefsInString(path.basename(f), args.refDigits);
+            console.log(' -', path.basename(f), '->', groups.length ? groups.join(', ') : '(none)');
+        }
+    }
+
+    // Plan (dry-run preview)
+    const plans = [];
+    for (const src of photos) {
+        const ref = pickRefFromFileNameAgainstSet(src, refSet, args.refDigits);
+        if (!ref) continue;
+        const name = refToName.get(ref);
+        if (!name) continue;
+        plans.push({ src, newBase: name });
+    }
+
+    console.log('\nPlanned outputs:');
+    if (plans.length === 0) {
+        console.warn(
+            '(No photos matched any reference from the PDF. Check --refDigits or filenames.)'
+        );
+    } else {
+        for (const p of plans) {
+            console.log(
+                `- ${path.basename(p.src)} -> ${sanitizeWindowsName(p.newBase)}${path.extname(p.src)}`
+            );
+        }
+    }
+
+    if (args.dryRun) {
+        console.log('\nDry run. Use --apply to write files to disk.');
+        return;
+    }
+
+    // Apply (copy or rename)
+    let count = 0;
+    for (const p of plans) {
+        if (args.inplace) {
+            await renameInPlace(p.src, p.newBase);
+        } else {
+            await copyWithNewName(p.src, args.outputDir, p.newBase);
+        }
+        count++;
+    }
+
+    console.log(
+        args.inplace
+            ? `\nDone. Renamed ${count} files in place.`
+            : `\nDone. Wrote ${count} files to ${args.outputDir}`
+    );
+})().catch(err => {
+    console.error('Error: ', err.stack || err.message);
+    process.exit(1);
+});
