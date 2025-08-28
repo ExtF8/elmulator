@@ -11,6 +11,7 @@
             "url": "https://github.com/ExtF8/elmulator/releases/"
         }
     ],
+    "type": "module",
     "scripts": {
         "start": "electron .",
         "build": "rm -rfvd dist/ && electron-builder --linux --win"
