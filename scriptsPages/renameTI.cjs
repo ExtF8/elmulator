@@ -7,10 +7,8 @@
  * Result for file "FLIR4179.jpg" -> "DB-A-SH.jpg"
  */
 
-import fs from 'fs/promises';
-import path from 'path';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+const fs = require('fs/promises');
+const path = require('path');
 const pdf = require('pdf-parse');
 
 /**
