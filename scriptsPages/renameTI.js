@@ -145,3 +145,21 @@ function extractPairsNameTiOnly(lines, refDigits = 4) {
 
     return results;
 }
+
+/**
+ * Make a string safe to use as a Windows filename.
+ * - Replaces illegal characters (\ / : * ? " < > |) with '-'
+ * - Collapses multiple spaces to single space
+ * - Trims leading/trailing whitespace
+ *
+ * @param {string} string - Raw name in pdf
+ * @returns {string} Sanitized, Windows-safe filename base
+ */
+function sanitizeWindowsName(string) {
+    return string
+        .replace(/[\\/:*?"<>|]/g, '-')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+
