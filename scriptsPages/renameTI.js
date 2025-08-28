@@ -244,3 +244,37 @@ function pickRefFromFileNameAgainstSet(filePath, refSet, minDigits) {
     return best;
 }
 
+/**
+ * Copy a file to the destination directory using a new, sanitized base name.
+ * Preserves the original file extension or .jpg if none.
+ * @param {string} src - Source file path
+ * @param {string} destDir - Destination directory
+ * @param {string} newBase - New filename base (without extension)
+ * @returns {Promise<string>} Final destination path
+ */
+async function copyWithNewName(src, destDir, newBase) {
+    await ensureDir(destDir);
+    const safe = sanitizeWindowsName(newBase);
+    const ext = path.extname(src) || '.jpg';
+    const dest = path.join(destDir, `${safe}${ext}`);
+    await fs.copyFile(src, dest);
+    return dest;
+}
+
+/**
+ * Rename a file in place to a new, sanitized base name.
+ * Preserves the original file extension or .jpg if none.
+ *
+ * @param {string} src - Existing file path
+ * @param {string} newBase - New filename base (without extension)
+ * @returns {Promise<string>} New full path after rename
+ */
+async function renameInPlace(src, newBase) {
+    const dir = path.dirname(src);
+    const safe = sanitizeWindowsName(newBase);
+    const ext = path.extname(src) || '.jpg';
+    const dest = path.join(dir, `${safe}${ext}`);
+    await fs.rename(src, dest);
+    return dest;
+}
+
