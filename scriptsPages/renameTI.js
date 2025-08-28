@@ -11,7 +11,32 @@ import fs from 'fs/promises';
 import path from 'path';
 import pdf from 'pdf-parse';
 
-// CLI parsing
+/**
+ * Parse command line arguments into a configuration object.
+ *
+ * Flags:
+ *   --pdf <path>       : Path to the PDF with "<NAME> TI-<REF>" lines (required)
+ *   --photos <dir>     : Directory containing images to rename (required)
+ *   --out <dir>        : Output directory (default: ./renamed_output)
+ *   --apply            : Perform writes (otherwise dry-run)
+ *   --refDigits <num>  : How many leading digits to keep when trimming PDF refs (default: 4)
+ *   --inplace          : Rename originals in place instead of copying to --out
+ *   --debug            : Print debugging info (detected refs in filenames)
+ *   --showMap          : Print all keys stored in the ref→name map
+ *
+ * @param {string[]} argv - Raw process.argv
+ * @returns {{
+ *   pdfPath: string | null,
+ *   photosDir: string | null,
+ *   outputDir: string,
+ *   dryRun: boolean,
+ *   refDigits: number,
+ *   inplace: boolean,
+ *   debug: boolean,
+ *   showMap: boolean
+ * }}
+ * @throws {Error} when required flags are missing
+ */
 function parseArgs(argv) {
     const args = {
         pdfPath: null,
@@ -53,12 +78,25 @@ function parseArgs(argv) {
 }
 
 // Helpers to read PDF text and to split PDF into meaningful lines
+/**
+ * Read a PDF file and return its extracted text.
+ *
+ * @param {string} pdfPath - Path to the PDF file.
+ * @returns {Promise<string>} PDF text content (or empty string if none)
+ */
 async function readPdfText(pdfPath) {
     const buffer = await fs.readFile(pdfPath);
     const data = await pdf(buffer);
     return data.text || '';
 }
 
+/**
+ * Split raw text into trimmed, non-empty lines. This normalizes whitespace
+ * and makes pattern-matching simpler.
+ *
+ * @param {string} text - Raw text content
+ * @returns {string[]} Array of non-empty, trimmed lines
+ */
 function splitNonEmptyLines(text) {
     return text
         .split(/\r?\n/)
