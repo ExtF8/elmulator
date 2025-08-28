@@ -77,7 +77,8 @@ function parseArgs(argv) {
     return args;
 }
 
-// Helpers to read PDF text and to split PDF into meaningful lines
+/* ------------------------------- Helpers -------------------------------- */
+
 /**
  * Read a PDF file and return its extracted text.
  *
@@ -278,3 +279,27 @@ async function renameInPlace(src, newBase) {
     return dest;
 }
 
+/**
+ * Build a ref -> name map from parsed PDF pairs, registering both:
+ *  - Full ref (e.g., "41791")
+ *  - Trimmed ref (e.g., "4179")
+ * The first occurrence wins if duplicates exist.
+ *
+ * @param {{name: string, ref: string, trimmedRef: string}[]} pairs - Parsed PDF entries
+ * @returns {Map<string, string>} Map where keys are refs (full and trimmed) and values are names
+ */
+function buildRefToNameMapFromPairs(pairs) {
+    const map = Map();
+
+    for (const { ref, trimmedRef, name } of pairs) {
+        if (!map.has(ref)) {
+            map.set(ref, name);
+        }
+
+        if (trimmedRef && !map.has(trimmedRef)) {
+            map.set(trimmedRef, name);
+        }
+    }
+
+    return map;
+}
