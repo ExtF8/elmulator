@@ -51,3 +51,59 @@ function parseArgs(argv) {
 
     return args;
 }
+
+// Helpers to read PDF text and to split PDF into meaningful lines
+async function readPdfText(pdfPath) {
+    const buffer = await fs.readFile(pdfPath);
+    const data = await pdf(buffer);
+    return data.text || '';
+}
+
+function splitNonEmptyLines(text) {
+    return text
+        .split(/\r?\n/)
+        .map(s => s.trim())
+        .filter(Boolean);
+}
+
+/**
+ * Extract pairs strictly from "<NAME> TI-<REF>" lines.
+ * This is the core parsing. It pulls both the full ref and
+ * a trimmed ref (first refDigits digits) to bridge
+ * PDF’s 5-digit TI (41791) to filename’s 4-digit TI (4179).
+ *
+ * Format examples:
+ *   "DB-A/SH TI-41791"      -> { name: "DB-A/SH", ref: "41791", trimmedRef: "4179" }
+ *   "DB Reception TI-4181"  -> { name: "DB Reception", ref: "4181", trimmedRef: "4181" }
+ *
+ * Regex explained:
+ *   ^(.*?)\s+    -> capture the name part (everything up to whitespace before TI)
+ *   TI[-\s]?     -> allow "TI-" or "TI " as separator
+ *   (\d{3,})     -> capture 3 or more digits (the reference number)
+ *   (?:\s+\d+)?  -> optional trailing index (ignored)
+ *   \s*$         -> allow trailing whitespace
+ *
+ * @param {string[]} lines - Lines of text extracted from PDF
+ * @param {number} refDigits - How many leading digits to keep when trimming refs
+ * @returns {{ name: string, ref: string, trimmedRef: string}[]}
+ */
+function extractPairsNameTiOnly(lines, refDigits = 4) {
+    const results = [];
+    const pattern = /^(.*?)\s+TI[-\s]?(\d{3,})(?:\s+\d+)?\s*$/i;
+
+    for (const raw of lines) {
+        const line = raw.trim();
+        const match = line.match(pattern);
+        if (!match) {
+            continue;
+        }
+
+        const name = match[1].trim();
+        const fullRef = match[2].trim();
+        const trimmedRef = fullRef.slice(0, refDigits);
+
+        results.push({ name, ref: fullRef, trimmedRef });
+    }
+
+    return results;
+}
