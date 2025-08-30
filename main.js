@@ -7,9 +7,25 @@ const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
+// ENV for Hot Reloading in the development environment.
+const env = process.env.NODE_ENV;
+
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
+
+// If development environment
+if (env === 'development') {
+    console.log('DEV');
+    try {
+        require('electron-reloader')(module, {
+            debug: true,
+            watchRenderer: true,
+        });
+    } catch (err) {
+        console.log('Error:', err);
+    }
+}
 
 let mainWindow;
 
