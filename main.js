@@ -2,10 +2,11 @@
  * Module for Electron Main Process Management
  */
 
-const { app, BrowserWindow, dialog, Menu } = require('electron');
+const { app, BrowserWindow, dialog, Menu, ipcMain } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
+const { spawn } = require('child_process');
 
 // ENV for Hot Reloading in the development environment.
 const env = process.env.NODE_ENV;
@@ -31,11 +32,11 @@ let mainWindow;
 
 // Constants
 const DEFAULT_WINDOW_DIMENSIONS = {
-    width: 280,
-    height: 460,
+    width: 340,
+    height: 660,
 };
 const ICON_PATH = path.join(__dirname, '/images/icons/icon.ico');
-const PRELOAD_SCRIPT_PATH = path.join(__dirname, 'renderer.js');
+const PRELOAD_SCRIPT_PATH = path.join(__dirname, 'preload.cjs');
 
 /**
  * Crates the main application window
@@ -47,6 +48,8 @@ const createWindow = () => {
         height: DEFAULT_WINDOW_DIMENSIONS.height,
         webPreferences: {
             preload: PRELOAD_SCRIPT_PATH,
+            contextIsolation: true,
+            nodeIntegration: false,
         },
         alwaysOnTop: true,
     });
@@ -54,7 +57,7 @@ const createWindow = () => {
     mainWindow.loadFile('index.html');
 
     // Uncomment to open the DevTools by default.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 };
 
 /**
@@ -87,6 +90,34 @@ app.whenReady().then(() => {
 
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
+
+    // Pick a single PDF file
+    ipcMain.handle('choose:pdf', async () => {
+        const { canceled, filePaths } = await dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [{ name: 'PDF', extensions: ['pdf'] }],
+        });
+        return canceled ? null : filePaths[0];
+    });
+
+    // Pick a directory containing photos
+    ipcMain.handle('choose:dir', async () => {
+        const { canceled, filePaths } = await dialog.showOpenDialog({
+            properties: ['openDirectory'],
+        });
+        return canceled ? null : filePaths[0];
+    });
+
+    ipcMain.handle('ti:run', async (event, payload) => {
+        const senderWin = BrowserWindow.fromWebContents(event.sender);
+        try {
+            const result = await runTiScript(senderWin, payload);
+            return { ok: result.code === 0, code: result.code };
+        } catch (err) {
+            senderWin.webContents.send('ti:log', `Error: ${err?.message || String(err)}\n`);
+            return { ok: false, code: -1, error: err?.message || String(err) };
+        }
+    });
 
     app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
@@ -142,3 +173,64 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, name) => {
         autoUpdater.quitAndInstall(false, true);
     }
 });
+
+/**
+ * Spawn the rename script as a child process.
+ * We do NOT change your working script; we just call it like CLI.
+ * @param {BrowserWindow} senderWin - the window to stream logs back to
+ * @param {object} args - { pdfPath, photosDir, mode, apply, refDigits }
+ * @returns {Promise<{code:number}>}
+ */
+function runTiScript(senderWin, args) {
+    const scriptPath = path.join(__dirname, 'tools', 'renameTI.cjs');
+    const cliArgs = [
+        scriptPath,
+        '--pdf',
+        args.pdfPath,
+        '--photos',
+        args.photosDir,
+        '--refDigits',
+        String(args.refDigits ?? 4),
+    ];
+
+    if (args.mode === 'inplace') {
+        cliArgs.push('--inplace');
+    } else {
+        // default to copy mode; ensure an out dir exists/used
+        const outDir = args.outDir || path.join(args.photosDir, 'renamed_output');
+        cliArgs.push('--out', outDir);
+    }
+
+    if (args.apply) {
+        cliArgs.push('--apply');
+    } else {
+        cliArgs.push('--debug', '--showMap'); // helpful logs on dry-run
+    }
+
+    // Use the same Node executable that launched Electron
+    const child = spawn(process.execPath, cliArgs, {
+        cwd: process.cwd(),
+        env: process.env,
+        stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    // Stream stdout/stderr lines to renderer
+    child.stdout.setEncoding('utf8');
+    child.stderr.setEncoding('utf8');
+
+    child.stdout.on('data', chunk => {
+        senderWin.webContents.send('ti:log', chunk);
+        // naive progress heuristic: bump on certain keywords if you want
+        if (/Planned outputs:/.test(chunk)) senderWin.webContents.send('ti:progress', 20);
+        if (/Dry run\./.test(chunk)) senderWin.webContents.send('ti:progress', 40);
+        if (/Done\./.test(chunk)) senderWin.webContents.send('ti:progress', 100);
+    });
+
+    child.stderr.on('data', chunk => {
+        senderWin.webContents.send('ti:log', chunk);
+    });
+
+    return new Promise(resolve => {
+        child.on('close', code => resolve({ code }));
+    });
+}
