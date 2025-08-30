@@ -1,27 +1,52 @@
 <!doctype html>
+<div class="ti-container">
+    <h2>TI Rename</h2>
 
-<div class="rings-container">
-    <!-- input -->
-    <h2>Rename Thermal Images</h2>
-    <div class="rings-input-container">
-        <label for="rings_input">PDF file location</label>
-        <input type="number" id="rings_input" data-input-type="r1" placeholder="input r1" />
-    </div>
-    <div class="rings-output-container">
-        <!-- outputs 1 and 2 -->
-        <div class="rings-outputs">
-            <label for="rings_output1">x1.67 r2</label>
-            <input type="number" id="rings_output1" data-output-type="r2_multiplier_1" readonly />
-            <label for="rings_output2">x2.67 r2</label>
-            <input type="number" id="rings_output2" data-output-type="r2_multiplier_2" readonly />
+    <div class="ti-inputs">
+        <!-- PDF file -->
+        <div class="ti-row">
+            <label for="ti_pdf">Choose reference PDF file</label>
+            <input type="file" id="ti_pdf" accept=".pdf" />
         </div>
 
-        <!-- outputs 3 and 4 -->
-        <div class="rings-outputs">
-            <label for="rings_output3">R1+R2</label>
-            <input type="number" id="rings_output3" data-output-type="r_sum_1" readonly />
-            <label for="rings_output4">R1+R2</label>
-            <input type="number" id="rings_output4" data-output-type="r_sum_2" readonly />
+        <!-- Photos directory -->
+        <div class="ti-row">
+            <label for="ti_photos">Choose photos folder to rename</label>
+            <!-- Directory picker: supported in Chromium/Electron via webkitdirectory -->
+            <input type="file" id="ti_photos" webkitdirectory directory />
+        </div>
+
+        <!-- Options: copy vs rename in place -->
+        <div class="ti-options" role="radiogroup" aria-label="Rename behavior">
+            <label for="copy">
+                <input id="copy" type="radio" name="ti_mode" value="copy" checked />
+                Copy to output folder
+            </label>
+            <label for="inplace">
+                <input id="inplace" type="radio" name="ti_mode" value="inplace" />
+                Rename in place
+            </label>
+        </div>
+
+        <!-- Output placeholder for dry-run -->
+        <div class="ti-output">
+            <label for="ti_output">Dry-run / Output</label>
+            <p id="ti_output" aria-live="polite">
+                <!-- planned outputs will appear here -->
+            </p>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="ti-progress">
+            <label for="ti_progress" style="min-width: 70px">Progress</label>
+            <progress id="ti_progress" value="0" max="100"></progress>
+            <span id="ti_progress_label" aria-hidden="true">0%</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="ti-actions">
+            <button id="ti_btn_rename" type="button">Rename (dry run)</button>
+            <button id="ti_btn_apply" type="button">Apply</button>
         </div>
     </div>
 </div>
