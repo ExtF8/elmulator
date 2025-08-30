@@ -20,12 +20,11 @@ html {
 
 body {
     text-align: center;
-    background-color: #E6E6E6;
+    background-color: #e6e6e6;
 }
 
 header {
     padding: 12px;
-
 }
 
 h1 {
@@ -60,7 +59,6 @@ footer {
     font-size: small;
 }
 
-
 .button {
     border: none;
     color: white;
@@ -94,10 +92,10 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 8px auto;
+    margin: 4px;
     /* width: 100%; */
     height: 30px;
-    gap: 20px;
+    gap: 6px;
 }
 
 #pages_container {
@@ -153,7 +151,7 @@ footer {
     flex-direction: column;
     justify-content: space-evenly;
     gap: 10px;
-    margin: 4px
+    margin: 4px;
 }
 
 .impedance-container input {
@@ -171,7 +169,6 @@ footer {
     justify-content: space-evenly;
     padding-top: 20px;
 }
-
 
 /* Circuits Count styling parameters */
 .circuits-container {
@@ -194,7 +191,6 @@ footer {
     justify-content: center;
     width: 100%;
 }
-
 
 .engineers-inputs label {
     display: flex;
@@ -229,7 +225,6 @@ footer {
     margin: 0 5px;
 }
 
-
 .phases-container {
     display: flex;
     column-gap: 4px;
@@ -243,4 +238,110 @@ footer {
 .phases label {
     display: flex;
     align-self: center;
+}
+
+/* Rename TI styles */
+.ti-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ti-inputs {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ti-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ti-row label {
+    font-size: 0.95rem;
+    text-align: start;
+}
+
+.ti-row input[type='file'],
+.ti-row input[type='text'] {
+    padding: 8px;
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+.ti-options {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0;
+}
+
+.ti-options label {
+    float: left;
+    clear: none;
+    display: flex;
+    align-items: center;
+    padding: 0px 1em 0px 8px;
+}
+
+.ti-options input[type='radio'],
+input.radio {
+    width: auto;
+    float: left;
+    clear: none;
+    margin: 0 6px 2px 0;
+}
+
+.ti-actions {
+    justify-content: space-evenly;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    padding: 6px 0;
+}
+
+.ti-actions button {
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f6f6f6;
+    cursor: pointer;
+}
+
+.ti-actions button:hover {
+    background: #eee;
+}
+
+.ti-output {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.ti-output p {
+    min-height: 48px;
+    padding: 8px;
+    border: 1px dashed #ccc;
+    background: #fafafa;
+    white-space: pre-wrap;
+}
+
+.ti-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ti-progress progress {
+    width: 100%;
+    height: 14px;
 }
