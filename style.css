@@ -51,6 +51,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 3px;
     padding-bottom: 3px;
     position: absolute;
     bottom: 0;
@@ -244,18 +245,19 @@ footer {
 .ti-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    width: 90%;
+    /* align-items: center;
+    justify-content: center; */
 }
 
 .ti-inputs {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    margin-bottom: 4px;
     gap: 12px;
     padding: 4px;
     width: 100%;
-    box-sizing: border-box;
 }
 
 .ti-row {
@@ -329,7 +331,7 @@ input.radio {
 
 .ti-output p {
     min-height: 48px;
-    padding: 8px;
+    /* padding: 8px; */
     border: 1px dashed #ccc;
     background: #fafafa;
     white-space: pre-wrap;
