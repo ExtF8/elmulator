@@ -21,7 +21,7 @@ const pdf = require('pdf-parse');
  *   --apply            : Perform writes (otherwise dry-run)
  *   --refDigits <num>  : How many leading digits to keep when trimming PDF refs (default: 4)
  *   --inplace          : Rename originals in place instead of copying to --out
- *   --debug            : Print debugging info (detected refs in filenames)
+ *   --inspect            : Print debugging info (detected refs in filenames)
  *   --showMap          : Print all keys stored in the ref→name map
  *
  * @param {string[]} argv - Raw process.argv
@@ -63,7 +63,7 @@ function parseArgs(argv) {
             args.refDigits = Number(argv[++i] || 4);
         } else if (a === '--inplace') {
             args.inplace = true;
-        } else if (a === '--debug') {
+        } else if (a === '--inspect') {
             args.debug = true;
         } else if (a === '--showMap') {
             args.showMap = true;
