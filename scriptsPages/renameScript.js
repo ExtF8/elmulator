@@ -1,11 +1,20 @@
 (function () {
-    const pdfInput = document.getElementById('ti_pdf');
-    const photosInput = document.getElementById('ti_photos');
+    // Elements
+    const pdfInput = document.getElementById('ti_pdf_path');
+    const photosInput = document.getElementById('ti_photos_path');
+    const btnBrowsePdf = document.getElementById('ti_browse_pdf');
+    const btnBrowseDir = document.getElementById('ti_browse_dir');
     const out = document.getElementById('ti_output');
     const progress = document.getElementById('ti_progress');
     const progressLabel = document.getElementById('ti_progress_label');
     const btnRename = document.getElementById('ti_btn_rename');
     const btnApply = document.getElementById('ti_btn_apply');
+
+    // ---- Simple in-memory cache (prevents re-prompting) ----
+    let cachedPdfPath = null;
+    let pickingPdf = false;
+    let cachedPhotosDir = null;
+    let pickingDir = false;
 
     function setProgress(pct) {
         const v = Math.max(0, Math.min(100, Number(pct) || 0));
@@ -13,62 +22,61 @@
         progressLabel.textContent = v + '%';
     }
 
+    // Streamed logs/progress from main
     const removeLogListener = window.ti.onLog(chunk => {
         out.textContent += chunk;
         out.scrollTop = out.scrollHeight;
     });
     const removeProgressListener = window.ti.onProgress(pct => setProgress(pct));
 
-    // Prefer absolute paths from dialogs. Fall back to <input> if present and has .path.
+    // ---- Helpers (single source of truth) ----
     async function getPdfPath() {
-        const f = pdfInput.files?.[0];
-        if (f?.path) return f.path;
-        // If user didn’t pick via dialog yet, ask now:
-        // const chosen = await window.ti.choosePdf();
-        // if (chosen) {
-        //     // reflect choice in UI (optional)
-        //     pdfInput.value = ''; // clear file input to avoid confusion
-        // }
-        // return chosen; // absolute string or null
+        // just return what we already chose via click handler
+        return cachedPdfPath || null;
     }
 
     async function getSelectedPhotosDir() {
-        // If you used <input webkitdirectory>, see if Electron attached .path to any File:
-        const files = photosInput.files;
-        if (files && files.length && files[0].path) {
-            const p = files[0].path;
-            const sep = window.env?.pathSep || '/';
-            const idx = p.lastIndexOf(sep);
-            return idx > 0 ? p.slice(0, idx) : null;
-        }
-        // Otherwise, ask main to choose a directory:
-        // const dir = await window.ti.chooseDir();
-        // if (dir) {
-        //     photosInput.value = ''; // clear input (optional)
-        // }
-        // return dir; // absolute string or null
+        return cachedPhotosDir || null;
     }
 
-    // (optional) hook “Browse…” buttons to dialogs
-    // if (btnPickPdf) {
-    //     btnPickPdf.addEventListener('click', async () => {
-    //         const p = await window.ti.choosePdf();
-    //         out.textContent = p ? `Selected PDF:\n${p}` : 'No PDF selected.';
-    //     });
-    // }
-    // if (btnPickDir) {
-    //     btnPickDir.addEventListener('click', async () => {
-    //         const d = await window.ti.chooseDir();
-    //         out.textContent = d ? `Selected folder:\n${d}` : 'No folder selected.';
-    //     });
-    // }
+    // ---- Keep cache in sync with user actions (reuse helpers; no duplicate logic) ----
+    btnBrowsePdf?.addEventListener('click', async e => {
+        e.preventDefault(); // prevents the HTML file dialog
+        if (pickingPdf || cachedPdfPath) return; // already choosing or chosen
+        pickingPdf = true;
+        try {
+            const chosen = await window.ti.choosePdf();
+            if (chosen) cachedPdfPath = chosen;
+            // replace placeholder
+            pdfInput.value = chosen;
+        } finally {
+            pickingPdf = false;
+        }
+    });
 
+    // Stop the built-in folder picker for the photos input; use native dialog instead.
+    btnBrowseDir?.addEventListener('click', async e => {
+        e.preventDefault(); // prevents the HTML directory dialog
+        if (pickingDir || cachedPhotosDir) return;
+        pickingDir = true;
+        try {
+            const dir = await window.ti.chooseDir();
+            if (dir) cachedPhotosDir = dir;
+            // replace placeholder
+            photosInput.value = dir;
+        } finally {
+            pickingDir = false;
+        }
+    });
+
+    // ---- Run (Dry run / Apply) ----
     async function runTi({ apply }) {
         out.textContent = '';
         setProgress(0);
 
         const pdfPath = await getPdfPath();
         const photosDir = await getSelectedPhotosDir();
+    
         if (!pdfPath || !photosDir) {
             out.textContent = 'Please select both a PDF file and a photos folder.\n';
             return;
@@ -78,9 +86,10 @@
         const payload = {
             pdfPath,
             photosDir,
-            mode,
-            apply: !!apply,
+            mode, // 'copy' | 'inplace'
+            apply: !!apply, // false = dry-run, true = apply
             refDigits: 4,
+            // outDir: optional
         };
 
         const { ok, code, error } = await window.ti.run(payload);
@@ -95,6 +104,7 @@
     btnRename.addEventListener('click', () => runTi({ apply: false }));
     btnApply.addEventListener('click', () => runTi({ apply: true }));
 
+    // Cleanup on navigation
     window.addEventListener('beforeunload', () => {
         try {
             removeLogListener();
