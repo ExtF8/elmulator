@@ -95,6 +95,7 @@ app.whenReady().then(() => {
     ipcMain.handle('choose:pdf', async () => {
         const { canceled, filePaths } = await dialog.showOpenDialog({
             properties: ['openFile'],
+            isAlwaysOnTop: true,
             filters: [{ name: 'PDF', extensions: ['pdf'] }],
         });
         return canceled ? null : filePaths[0];
@@ -104,6 +105,7 @@ app.whenReady().then(() => {
     ipcMain.handle('choose:dir', async () => {
         const { canceled, filePaths } = await dialog.showOpenDialog({
             properties: ['openDirectory'],
+            isAlwaysOnTop: true,
         });
         return canceled ? null : filePaths[0];
     });
@@ -204,7 +206,7 @@ function runTiScript(senderWin, args) {
     if (args.apply) {
         cliArgs.push('--apply');
     } else {
-        cliArgs.push('--debug', '--showMap'); // helpful logs on dry-run
+        cliArgs.push('--inspect', '--showMap'); // helpful logs on dry-run
     }
 
     // Use the same Node executable that launched Electron
