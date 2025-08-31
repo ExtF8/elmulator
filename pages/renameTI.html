@@ -6,14 +6,15 @@
         <!-- PDF file -->
         <div class="ti-row">
             <label for="ti_pdf">Choose reference PDF file</label>
-            <input type="file" id="ti_pdf" accept=".pdf" />
+            <button type="button" id="ti_browse_pdf">Choose PDF...</button>
+            <input type="text" id="ti_pdf_path" readonly placeholder="No file selected" />
         </div>
 
         <!-- Photos directory -->
         <div class="ti-row">
             <label for="ti_photos">Choose photos folder to rename</label>
-            <!-- Directory picker: supported in Chromium/Electron via webkitdirectory -->
-            <input type="file" id="ti_photos" webkitdirectory directory />
+            <button type="button" id="ti_browse_dir">Choose TI images...</button>
+            <input type="text" id="ti_photos_path" readonly placeholder="No folder selected" />
         </div>
 
         <!-- Options: copy vs rename in place -->
@@ -38,7 +39,7 @@
 
         <!-- Progress bar -->
         <div class="ti-progress">
-            <label for="ti_progress" >Progress</label>
+            <label for="ti_progress">Progress</label>
             <progress id="ti_progress" value="0" max="100"></progress>
             <span id="ti_progress_label" aria-hidden="true">0%</span>
         </div>
