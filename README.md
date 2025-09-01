@@ -59,3 +59,45 @@ The module is designed to help distribute circuit work among engineers. You inpu
    - **One Engineer (Three Phase)**: This section shows the number of three-phase circuits that one particular engineer will handle, including any excess.
    - **Other Engineers (Three Phase)**: This section shows the number of three-phase circuits that the remaining engineers will handle.
 3. **Understanding the Distribution**: The module divides the circuits equally among the engineers, with one engineer handling any excess circuits if they cannot be evenly divided.
+
+---
+
+## 4. Rename TI
+
+### Overview
+
+The "Rename TI" module automates the process of renaming thermal image files (e.g., `FLIR4179.jpg`) based on naming references extracted from a provided PDF. The PDF includes text lines like `DB-A/SH TI-4179`, where the part before `TI-` becomes the new name (`DB-A-SH.jpg`) and the digits after `TI-` are used to match the corresponding image file.
+
+This module helps ensure consistency and accuracy in naming large sets of images.
+
+### Usage Guide
+
+1. **Select Inputs**:
+   - **PDF File**: Choose the PDF that contains the references (`<NAME> TI-<REF>` lines).
+   - **Photos Folder**: Choose the directory containing the thermal image files to rename.
+2. **Choose Mode**:
+   - **Copy**: Creates renamed copies in a new output folder.
+   - **In Place**: Renames the original files directly.
+3. **Dry Run**:
+   - Press **Rename** to perform a dry run.
+   - The output window will show the planned renames, e.g.:
+
+     ```
+     Planned outputs:
+     - FLIR4179.jpg → DB-A-SH.jpg
+     - FLIR4180.jpg → DB-Balls.jpg
+
+     Dry run. Press Apply to write files to disk.
+     ```
+
+4. **Apply Changes**:
+   - Press **Apply** to execute the renaming.
+   - The output window will confirm completion, e.g.:
+
+     ```
+     Done.
+     Wrote 4 files to:
+     /path/to/photos/renamed_output
+     ```
+
+---
