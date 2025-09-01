@@ -1,6 +1,6 @@
 # Modules Overview
 
-This document provides an overview and usage guide for the three main modules: "Rings Resistance Calculations," "External Impedance Calculations," and "Module for calculating circuit count."
+This document provides an overview and usage guide for modules: "Rings Resistance Calculations," "External Impedance Calculations," "Module for calculating circuit count" and "Rename TI"
 
 ## 1. Rings Resistance Calculations
 
