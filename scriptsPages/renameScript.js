@@ -10,17 +10,20 @@
     const btnRename = document.getElementById('ti_btn_rename');
     const btnApply = document.getElementById('ti_btn_apply');
 
-    // ---- Simple in-memory cache (prevents re-prompting) ----
+    // Cache
     let cachedPdfPath = null;
-    let pickingPdf = false;
     let cachedPhotosDir = null;
+    let pickingPdf = false;
     let pickingDir = false;
 
-    // log filtering state
-    let currentRunIsApply = false;
-    let collectingPlan = false;
-    let plannedLines = [];
-    let logRemainder = ''; // carry over partial lines between chunks
+    // log parse state
+    let isApplyRun = false;
+    let buffer = ''; // holds partial lines between chunks
+    let collectingPlan = false; // are we inside the Planned outputs section?
+    let planned = []; // collected "- ..." lines or the "(No photos ...)" message
+    let rendered = false; // did we already render the final output for this run?
+    let collectingDone = false;
+    let doneLines = [];
 
     function setProgress(pct) {
         const v = Math.max(0, Math.min(100, Number(pct) || 0));
@@ -28,157 +31,165 @@
         progressLabel.textContent = v + '%';
     }
 
-    // Streamed logs/progress from main
-    // On apply, detect and print only - Done.
-    // ignore other logs during Apply.
-    const removeLogListener = window.ti.onLog(chunk => {
-        if (currentRunIsApply) {
-            if (chunk.includes('Done.')) {
-                out.textContent = 'Done.'; // overwrite with clean status
-                out.scrollTop = out.scrollHeight;
-            }
-            return;
-        }
+    // Reset parse state at the beginning of each run
+    function resetParseState(apply) {
+        isApplyRun = !!apply;
+        buffer = '';
+        collectingPlan = false;
+        planned = [];
+        rendered = false;
+        out.textContent = '';
+        setProgress(0);
+        collectingDone = false;
+        doneLines = [];
+    }
 
-        // Dry-run: extract only the "Planned outputs:" block
-        logRemainder += chunk;
-        // Process complete lines only
-        const lines = logRemainder.split('\n');
-        logRemainder = lines.pop() ?? ''; // keep last partial
+    // ---------- Log handler (kept small & focused) ----------
+    const offLog = window.ti.onLog(chunk => {
+        if (rendered) return; // we already showed what we need for this run
 
-        for (const raw of lines) {
+        buffer += chunk;
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? ''; // carry over last partial line
+
+        for (let raw of lines) {
             const line = raw.replace(/\r$/, '');
+            console.log(line);
+            console.log(raw);
 
-            // Start collecting when header appears
-            if (!collectingPlan && line.includes('Planned outputs:')) {
-                collectingPlan = true;
-                plannedLines = []; // reset
-                continue; // do not display the header yet; we will add it once we have lines
-            }
+            if (isApplyRun) {
+                // Start collecting when we see "Done."
+                if (!collectingDone) {
+                    if (/^Done\./.test(line)) {
+                        collectingDone = true;
+                        doneLines = [line];
+                        out.textContent = doneLines.join('\n'); // show immediately
+                    }
+                    continue;
+                }
 
-            if (!collectingPlan) continue;
-
-            // Stop cases: blank line after some items, or typical end markers
-            if (
-                (line.trim() === '' && plannedLines.length > 0) ||
-                line.includes('Dry run.') ||
-                line.includes('Dry run') ||
-                line.includes('Done.')
-            ) {
-                // Render only the planned block
-                const body = plannedLines.length
-                    ? plannedLines.join('\n')
-                    : '(No photos matched any reference from the PDF. Check --refDigits or filenames.)';
-
-                out.textContent = `Planned outputs:\n${body}`;
-                out.scrollTop = out.scrollHeight;
-
-                // Stop collecting after we’ve printed the block
-                collectingPlan = false;
-                plannedLines = [];
+                // We're in the Done block — push every line and update UI live
+                if (line.trim() === '') {
+                    // optional: if a blank arrives, consider the block complete
+                    rendered = true;
+                    setProgress(100);
+                    out.textContent = doneLines.join('\n');
+                    return;
+                } else {
+                    doneLines.push(line);
+                    out.textContent = doneLines.join('\n'); // live update (no need to wait)
+                }
                 continue;
             }
 
-            // Collect bullet lines that look like planned renames
+            // DRY RUN parsing
+            if (!collectingPlan) {
+                if (line.includes('Planned outputs:')) {
+                    collectingPlan = true;
+                    planned = [];
+                }
+                continue;
+            }
+
+            // We are collecting plan lines
             if (/^\s*-\s+/.test(line)) {
-                plannedLines.push(line.trim());
+                planned.push(line.trim());
+                continue;
+            }
+            if (line.trim().startsWith('(No photos matched')) {
+                planned = [line.trim()];
                 continue;
             }
 
-            // Also allow the single-line "no matches" message
-            if (line.trim().startsWith('(No photos matched')) {
-                plannedLines.push(line.trim());
-                continue;
+            // Stop collecting on blank line or the dry-run trailer
+            if (line.trim() === '' || /^Dry run\./.test(line)) {
+                const body = planned.length
+                    ? planned.join('\n')
+                    : '(No photos matched any reference from the PDF. Check --refDigits or filenames.)';
+                out.textContent = `Planned outputs:\n${body}\n\nDry run. Press Apply to write files to disk.`;
+                rendered = true;
+                setProgress(60);
+                return;
             }
         }
     });
-    const removeProgressListener = window.ti.onProgress(pct => setProgress(pct));
 
-    // ---- Helpers (single source of truth) ----
-    async function getPdfPath() {
-        // just return what we already chose via click handler
-        return cachedPdfPath || null;
-    }
+    const offProg = window.ti.onProgress(pct => setProgress(pct));
 
-    async function getSelectedPhotosDir() {
-        return cachedPhotosDir || null;
-    }
-
-    // ---- Keep cache in sync with user actions (reuse helpers; no duplicate logic) ----
-    btnBrowsePdf?.addEventListener('click', async e => {
-        e.preventDefault(); // prevents the HTML file dialog
-        if (pickingPdf || cachedPdfPath) return; // already choosing or chosen
+    // ---------- Browse buttons (native dialogs only) ----------
+    btnBrowsePdf.addEventListener('click', async () => {
+        if (pickingPdf) return;
         pickingPdf = true;
         try {
             const chosen = await window.ti.choosePdf();
-            if (chosen) cachedPdfPath = chosen;
-            // replace placeholder
-            pdfInput.value = chosen;
+            if (chosen) {
+                cachedPdfPath = chosen;
+                pdfInput.value = chosen;
+            }
         } finally {
             pickingPdf = false;
         }
     });
 
-    // Stop the built-in folder picker for the photos input; use native dialog instead.
-    btnBrowseDir?.addEventListener('click', async e => {
-        e.preventDefault(); // prevents the HTML directory dialog
-        if (pickingDir || cachedPhotosDir) return;
+    btnBrowseDir.addEventListener('click', async () => {
+        if (pickingDir) return;
         pickingDir = true;
         try {
             const dir = await window.ti.chooseDir();
-            if (dir) cachedPhotosDir = dir;
-            // replace placeholder
-            photosInput.value = dir;
+            if (dir) {
+                cachedPhotosDir = dir;
+                photosInput.value = dir;
+            }
         } finally {
             pickingDir = false;
         }
     });
 
-    // ---- Run (Dry run / Apply) ----
+    // ---------- Run (Dry run / Apply) ----------
     async function runTi({ apply }) {
-        out.textContent = '';
-        setProgress(0);
+        resetParseState(apply);
 
-        currentRunIsApply = !!apply;
-        collectingPlan = false;
-        plannedLines = [];
-        logRemainder = '';
-
-        const pdfPath = await getPdfPath();
-        const photosDir = await getSelectedPhotosDir();
+        const pdfPath = cachedPdfPath;
+        const photosDir = cachedPhotosDir;
 
         if (!pdfPath || !photosDir) {
-            out.textContent = 'Please select both a PDF file and a photos folder.\n';
+            out.textContent = 'Please select both a PDF file and a photos folder.';
             return;
         }
 
         const mode = document.querySelector('input[name="ti_mode"]:checked')?.value || 'copy';
-        const payload = {
-            pdfPath,
-            photosDir,
-            mode, // 'copy' | 'inplace'
-            apply: !!apply, // false = dry-run, true = apply
-            refDigits: 4,
-            // outDir: optional
-        };
+        const payload = { pdfPath, photosDir, mode, apply: !!apply, refDigits: 4 };
 
         const { ok, code, error } = await window.ti.run(payload);
         if (!ok) {
-            out.textContent += `\nProcess exited with code ${code}${error ? `: ${error}` : ''}\n`;
-        } else {
-            setProgress(apply ? 100 : 60);
-            out.textContent += `\n${apply ? 'Apply completed.' : 'Dry run complete.'}\n`;
+            out.textContent = `Process exited with code ${code}${error ? `: ${error}` : ''}`;
+            return;
+        }
+
+        // Finalize rendering if logs ended before we got a blank line
+        if (!rendered && isApplyRun && collectingDone) {
+            if (buffer.trim()) doneLines.push(buffer.replace(/\r$/, ''));
+            out.textContent = doneLines.join('\n');
+            setProgress(100);
+            rendered = true;
+        } else if (!rendered && !isApplyRun && collectingPlan) {
+            const body = planned.length
+                ? planned.join('\n')
+                : '(No photos matched any reference from the PDF. Check --refDigits or filenames.)';
+            out.textContent = `Planned outputs:\n${body}\n\nDry run. Press Apply to write files to disk.`;
+            setProgress(60);
+            rendered = true;
         }
     }
 
     btnRename.addEventListener('click', () => runTi({ apply: false }));
     btnApply.addEventListener('click', () => runTi({ apply: true }));
 
-    // Cleanup on navigation
+    // Cleanup
     window.addEventListener('beforeunload', () => {
         try {
-            removeLogListener();
-            removeProgressListener();
+            offLog();
+            offProg();
         } catch {}
     });
 })();
