@@ -91,25 +91,48 @@ app.whenReady().then(() => {
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
 
-    // Pick a single PDF file
-    ipcMain.handle('choose:pdf', async () => {
-        const { canceled, filePaths } = await dialog.showOpenDialog({
+    /**
+     * Open a native file picker for a single PDF.
+     *
+     * Uses the sender's BrowserWindow as the parent so the dialog stays on top
+     * and is modal relative to your app window.
+     *
+     * @returns {Promise<string|null>} Absolute path to the selected PDF, or null if canceled.
+     */
+    ipcMain.handle('choose:pdf', async event => {
+        const parent = BrowserWindow.fromWebContents(event.sender);
+        const { canceled, filePaths } = await dialog.showOpenDialog(parent, {
             properties: ['openFile'],
-            isAlwaysOnTop: true,
             filters: [{ name: 'PDF', extensions: ['pdf'] }],
+            title: 'Select PDF',
         });
         return canceled ? null : filePaths[0];
     });
 
-    // Pick a directory containing photos
-    ipcMain.handle('choose:dir', async () => {
-        const { canceled, filePaths } = await dialog.showOpenDialog({
+    /**
+     * Open a native directory picker for the photos folder.
+     *
+     * Uses the sender's BrowserWindow as the parent so the dialog stays on top
+     * and is modal relative to your app window.
+     *
+     * @returns {Promise<string|null>} Absolute path to the selected directory, or null if canceled.
+     */
+    ipcMain.handle('choose:dir', async event => {
+        const parent = BrowserWindow.fromWebContents(event.sender);
+        const { canceled, filePaths } = await dialog.showOpenDialog(parent, {
             properties: ['openDirectory'],
-            isAlwaysOnTop: true,
+            title: 'Select Photos Folder',
         });
         return canceled ? null : filePaths[0];
     });
 
+    /**
+     * Run the TI rename script (dry-run or apply) and return a simple status object.
+     *
+     * @param {Electron.IpcMainInvokeEvent} event
+     * @param {{ pdfPath: string, photosDir: string, mode: 'copy'|'inplace', apply: boolean, refDigits?: number, outDir?: string }} payload
+     * @returns {Promise<{ok:boolean, code:number, error?:string}>}
+     */
     ipcMain.handle('ti:run', async (event, payload) => {
         const senderWin = BrowserWindow.fromWebContents(event.sender);
         try {
