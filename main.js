@@ -57,7 +57,7 @@ const createWindow = () => {
     mainWindow.loadFile('index.html');
 
     // Uncomment to open the DevTools by default.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 };
 
 /**
