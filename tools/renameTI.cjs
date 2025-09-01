@@ -394,8 +394,8 @@ function buildRefToNameMapFromPairs(pairs) {
 
     console.log(
         args.inplace
-            ? `\nDone. Renamed ${count} files in place.`
-            : `\nDone. Wrote ${count} files to ${args.outputDir}`
+            ? `\nDone.\nRenamed ${count} files in place.`
+            : `\nDone.\nWrote ${count} files to:\n${args.outputDir}`
     );
 })().catch(err => {
     console.error('Error: ', err.stack || err.message);
