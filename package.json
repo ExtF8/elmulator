@@ -18,6 +18,13 @@
     "build": {
         "appId": "com.extfield8.elmulator",
         "productName": "Elmulator",
+        "asar": true,
+        "asarUnpack": [
+            "tools/**",
+            "node_modules/pdf-parse/**",
+            "node_modules/pdfjs-dist/**",
+            "node_modules/node-ensure/**"
+        ],
         "linux": {
             "icon": "./images/icons/32x32.png",
             "category": "Utility",
@@ -37,13 +44,6 @@
         "win": {
             "artifactName": "Elmulator-${version}-${arch}.${ext}",
             "target": "nsis",
-            "asar": true,
-            "asarUnpack": [
-                "tools/**",
-                "node_modules/pdf-parse/**",
-                "node_modules/pdfjs-dist/**",
-                "node_modules/node-ensure/**"
-            ],
             "electronLanguages": [
                 "en-US"
             ],
