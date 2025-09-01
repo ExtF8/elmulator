@@ -99,7 +99,7 @@ function setupMainMenu() {
                     },
                 },
                 {
-                    label: 'By me coffee',
+                    label: 'Buy me coffee',
                     click: async () => {
                         const { shell } = require('electron');
                         await shell.openExternal('https://ko-fi.com/extfield8');
