@@ -2,13 +2,14 @@
  * Module for Electron Main Process Management
  */
 
-const { app, BrowserWindow, dialog, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 const fs = require('fs');
 
 const { fork } = require('child_process');
+const { setupMainMenu } = require('./menu/menu');
 
 // --- Single-instance lock (prevents second instance on Windows) ---
 const gotLock = app.requestSingleInstanceLock();
@@ -61,7 +62,7 @@ const ICON_PATH = path.join(__dirname, '/images/icons/icon.ico');
 const PRELOAD_SCRIPT_PATH = path.join(__dirname, 'preload.cjs');
 
 /**
- * Crates the main application window
+ * Crates the main application window with the application menu
  */
 const createWindow = () => {
     mainWindow = new BrowserWindow({
@@ -78,6 +79,9 @@ const createWindow = () => {
 
     mainWindow.loadFile('index.html');
 
+    // Build the application menu.
+    setupMainMenu();
+
     // Uncomment to open the DevTools by default.
     // mainWindow.webContents.openDevTools();
 };
@@ -89,29 +93,6 @@ const createWindow = () => {
  */
 app.whenReady().then(() => {
     createWindow();
-
-    // Add app version to Help submenu
-    const template = [
-        ...(process.platform === 'darwin'
-            ? [
-                  {
-                      label: app.name,
-                      submenu: [{ role: 'about' }, { type: 'separator' }, { role: 'quit' }],
-                  },
-              ]
-            : []),
-        {
-            label: 'File',
-            submenu: [{ role: 'quit' }],
-        },
-        {
-            label: 'Help',
-            submenu: [{ label: `Version ${app.getVersion()}`, enabled: false }],
-        },
-    ];
-
-    const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
 
     /**
      * Open a native file picker for a single PDF.
