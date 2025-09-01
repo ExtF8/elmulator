@@ -47,19 +47,6 @@ input {
     text-align: center;
 }
 
-footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 3px;
-    padding-bottom: 3px;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    color: white;
-    font-size: small;
-}
-
 .button {
     border: none;
     color: white;
