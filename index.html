@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
     <head>
         <meta charset="UTF-8" />
@@ -10,7 +10,6 @@
         <title>Elmulator</title>
         <link rel="stylesheet" href="style.css" />
         <script src="./renderer.js" defer></script>
-
     </head>
     <body>
         <header>
@@ -19,28 +18,23 @@
         </header>
         <main>
             <nav id="pages_button_container">
-                <button
-                    data-load-page="./pages/rings.html"
-                    class="button page-button"
-                >
+                <button data-load-page="./pages/rings.html" class="button page-button">
                     Rings
                 </button>
-                <button
-                    data-load-page="./pages/externalImpedance.html"
-                    class="button page-button"
-                >
+                <button data-load-page="./pages/externalImpedance.html" class="button page-button">
                     Ze
                 </button>
-                <button
-                    data-load-page="./pages/circuitsCount.html"
-                    class="button page-button"
-                >
+                <button data-load-page="./pages/circuitsCount.html" class="button page-button">
                     cct
+                </button>
+                <button data-load-page="./pages/renameTI.html" class="button page-button">
+                    Rename
                 </button>
             </nav>
 
             <div id="pages_container"></div>
         </main>
         <footer>Developed by ExtF8</footer>
+        <script defer src="./renderer.js"></script>
     </body>
 </html>

@@ -11,6 +11,7 @@ const SCRIPT_MAPPING = {
     './pages/circuitsCount.html': './scriptsPages/circuitsCalculator.js',
     './pages/externalImpedance.html': './scriptsPages/impedanceCalculator.js',
     './pages/rings.html': './scriptsPages/resistanceCalculator.js',
+    './pages/renameTI.html': './scriptsPages/renameScript.js'
 };
 
 // Initialization

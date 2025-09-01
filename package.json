@@ -12,7 +12,7 @@
         }
     ],
     "scripts": {
-        "start": "electron .",
+        "start": "export NODE_ENV=development&&electron .",
         "build": "rm -rfvd dist/ && electron-builder --linux --win"
     },
     "build": {
@@ -49,12 +49,14 @@
     "license": "MIT",
     "devDependencies": {
         "electron": "^37.4.0",
-        "electron-builder": "^26.0.12"
+        "electron-builder": "^26.0.12",
+        "electron-reloader": "^1.2.3"
     },
     "dependencies": {
         "@electron/asar": "^3.2.10",
         "@electron/packager": "^18.3.2",
         "electron-log": "^5.4.1",
-        "electron-updater": "^6.6.2"
+        "electron-updater": "^6.6.2",
+        "pdf-parse": "^1.1.1"
     }
 }

@@ -1,0 +1,53 @@
+<!doctype html>
+<div class="ti-container">
+    <h2>TI Rename</h2>
+
+    <div class="ti-inputs">
+        <!-- PDF file -->
+        <div class="ti-row">
+            <label for="ti_pdf">Choose reference PDF file</label>
+            <button type="button" id="ti_browse_pdf">Choose PDF...</button>
+            <input type="text" id="ti_pdf_path" readonly placeholder="No file selected" />
+        </div>
+
+        <!-- Photos directory -->
+        <div class="ti-row">
+            <label for="ti_photos">Choose photos folder to rename</label>
+            <button type="button" id="ti_browse_dir">Choose TI images...</button>
+            <input type="text" id="ti_photos_path" readonly placeholder="No folder selected" />
+        </div>
+
+        <!-- Options: copy vs rename in place -->
+        <div class="ti-options" role="radiogroup" aria-label="Rename behavior">
+            <label for="copy">
+                <input id="copy" type="radio" name="ti_mode" value="copy" checked />
+                Copy to output folder
+            </label>
+            <label for="inplace">
+                <input id="inplace" type="radio" name="ti_mode" value="inplace" />
+                Rename in place
+            </label>
+        </div>
+
+        <!-- Output placeholder for dry-run -->
+        <div class="ti-output">
+            <label for="ti_output">Dry-run / Output</label>
+            <p id="ti_output" aria-live="polite">
+                <!-- planned outputs will appear here -->
+            </p>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="ti-progress">
+            <label for="ti_progress">Progress</label>
+            <progress id="ti_progress" value="0" max="100"></progress>
+            <span id="ti_progress_label" aria-hidden="true">0%</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="ti-actions">
+            <button id="ti_btn_rename" type="button">Rename (dry run)</button>
+            <button id="ti_btn_apply" type="button">Apply</button>
+        </div>
+    </div>
+</div>
