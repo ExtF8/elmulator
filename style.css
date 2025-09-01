@@ -283,7 +283,7 @@ footer {
 .ti-options {
     display: flex;
     flex-direction: column;
-    padding: 4px 0;
+    /* padding: 4px 0; */
 }
 
 .ti-options label {
@@ -291,7 +291,7 @@ footer {
     clear: none;
     display: flex;
     align-items: center;
-    padding: 0px 1em 0px 8px;
+    padding: 0px 1em 0px 4px;
 }
 
 .ti-options input[type='radio'],
@@ -307,13 +307,12 @@ input.radio {
     display: flex;
     flex-direction: row;
     gap: 12px;
-    padding: 6px 0;
 }
 
 .ti-actions button {
     padding: 8px 14px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     background: #f6f6f6;
     cursor: pointer;
 }
@@ -335,12 +334,14 @@ input.radio {
     border: 1px dashed #ccc;
     background: #fafafa;
     white-space: pre-wrap;
+    font-size: 14px;
+    padding: 2px;
 }
 
 .ti-progress {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
 }
 
 .ti-actions label {
