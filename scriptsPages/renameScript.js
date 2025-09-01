@@ -16,6 +16,12 @@
     let cachedPhotosDir = null;
     let pickingDir = false;
 
+    // log filtering state
+    let currentRunIsApply = false;
+    let collectingPlan = false;
+    let plannedLines = [];
+    let logRemainder = ''; // carry over partial lines between chunks
+
     function setProgress(pct) {
         const v = Math.max(0, Math.min(100, Number(pct) || 0));
         progress.value = v;
@@ -23,9 +29,68 @@
     }
 
     // Streamed logs/progress from main
+    // On apply, detect and print only - Done.
+    // ignore other logs during Apply.
     const removeLogListener = window.ti.onLog(chunk => {
-        out.textContent += chunk;
-        out.scrollTop = out.scrollHeight;
+        if (currentRunIsApply) {
+            if (chunk.includes('Done.')) {
+                out.textContent = 'Done.'; // overwrite with clean status
+                out.scrollTop = out.scrollHeight;
+            }
+            return;
+        }
+
+        // Dry-run: extract only the "Planned outputs:" block
+        logRemainder += chunk;
+        // Process complete lines only
+        const lines = logRemainder.split('\n');
+        logRemainder = lines.pop() ?? ''; // keep last partial
+
+        for (const raw of lines) {
+            const line = raw.replace(/\r$/, '');
+
+            // Start collecting when header appears
+            if (!collectingPlan && line.includes('Planned outputs:')) {
+                collectingPlan = true;
+                plannedLines = []; // reset
+                continue; // do not display the header yet; we will add it once we have lines
+            }
+
+            if (!collectingPlan) continue;
+
+            // Stop cases: blank line after some items, or typical end markers
+            if (
+                (line.trim() === '' && plannedLines.length > 0) ||
+                line.includes('Dry run.') ||
+                line.includes('Dry run') ||
+                line.includes('Done.')
+            ) {
+                // Render only the planned block
+                const body = plannedLines.length
+                    ? plannedLines.join('\n')
+                    : '(No photos matched any reference from the PDF. Check --refDigits or filenames.)';
+
+                out.textContent = `Planned outputs:\n${body}`;
+                out.scrollTop = out.scrollHeight;
+
+                // Stop collecting after we’ve printed the block
+                collectingPlan = false;
+                plannedLines = [];
+                continue;
+            }
+
+            // Collect bullet lines that look like planned renames
+            if (/^\s*-\s+/.test(line)) {
+                plannedLines.push(line.trim());
+                continue;
+            }
+
+            // Also allow the single-line "no matches" message
+            if (line.trim().startsWith('(No photos matched')) {
+                plannedLines.push(line.trim());
+                continue;
+            }
+        }
     });
     const removeProgressListener = window.ti.onProgress(pct => setProgress(pct));
 
@@ -74,9 +139,14 @@
         out.textContent = '';
         setProgress(0);
 
+        currentRunIsApply = !!apply;
+        collectingPlan = false;
+        plannedLines = [];
+        logRemainder = '';
+
         const pdfPath = await getPdfPath();
         const photosDir = await getSelectedPhotosDir();
-    
+
         if (!pdfPath || !photosDir) {
             out.textContent = 'Please select both a PDF file and a photos folder.\n';
             return;
