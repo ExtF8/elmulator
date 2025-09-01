@@ -94,6 +94,12 @@
             console.log(line);
             console.log(raw);
 
+            // Always surface errors from main/child
+            if (line.startsWith('[ERR]')) {
+                out.textContent = (out.textContent ? out.textContent + '\n' : '') + line;
+                continue;
+            }
+
             if (isApplyRun) {
                 if (!collectingDone) {
                     if (/^Done\./.test(line)) {
