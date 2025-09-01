@@ -6,7 +6,29 @@ const { app, BrowserWindow, dialog, Menu, ipcMain } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
-const { spawn } = require('child_process');
+const fs = require('fs');
+
+const { fork } = require('child_process');
+
+// --- Single-instance lock (prevents second instance on Windows) ---
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+    app.quit();
+} else {
+    app.on('second-instance', () => {
+        const win = BrowserWindow.getAllWindows()[0];
+        if (win) {
+            win.show();
+            win.focus();
+        }
+    });
+}
+// helper to locate the script both in dev and after packaging
+function getToolPath(rel) {
+    // In production, files under asar must be unpacked to run via Node
+    const base = app.isPackaged ? path.join(process.resourcesPath, 'app.asar.unpacked') : __dirname;
+    return path.join(base, rel);
+}
 
 // ENV for Hot Reloading in the development environment.
 const env = process.env.NODE_ENV;
@@ -207,9 +229,18 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, name) => {
  * @returns {Promise<{code:number}>}
  */
 function runTiScript(senderWin, args) {
-    const scriptPath = path.join(__dirname, 'tools', 'renameTI.cjs');
+    const scriptPath = getToolPath('tools/renameTI.cjs');
+
+    // Guard: ensure the unpacked tool exists in production
+    if (!fs.existsSync(scriptPath)) {
+        const msg =
+            `Tool not found at: ${scriptPath}\n` +
+            `Tip: ensure "asarUnpack": ["tools/**","node_modules/pdf-parse/**","node_modules/pdfjs-dist/**"] in build config.`;
+        senderWin.webContents.send('ti:log', msg + '\n');
+        return Promise.resolve({ code: -1 });
+    }
+
     const cliArgs = [
-        scriptPath,
         '--pdf',
         args.pdfPath,
         '--photos',
@@ -229,33 +260,46 @@ function runTiScript(senderWin, args) {
     if (args.apply) {
         cliArgs.push('--apply');
     } else {
-        cliArgs.push('--inspect', '--showMap'); // helpful logs on dry-run
+        cliArgs.push('--inspect', '--showMap');
     }
 
-    // Use the same Node executable that launched Electron
-    const child = spawn(process.execPath, cliArgs, {
-        cwd: process.cwd(),
-        env: process.env,
-        stdio: ['ignore', 'pipe', 'pipe'],
+    // Diagnostics: what exactly are we executing?
+    senderWin.webContents.send(
+        'ti:log',
+        `[runTi] script: ${scriptPath}\n[runTi] args: ${cliArgs.join(' ')}\n`
+    );
+
+    // IMPORTANT: use fork + silent to capture stdio; no new Electron instance
+    const child = fork(scriptPath, cliArgs, {
+        stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+        silent: true,
     });
 
-    // Stream stdout/stderr lines to renderer
     child.stdout.setEncoding('utf8');
     child.stderr.setEncoding('utf8');
 
     child.stdout.on('data', chunk => {
         senderWin.webContents.send('ti:log', chunk);
-        // naive progress heuristic: bump on certain keywords if you want
         if (/Planned outputs:/.test(chunk)) senderWin.webContents.send('ti:progress', 20);
-        if (/Dry run\./.test(chunk)) senderWin.webContents.send('ti:progress', 40);
-        if (/Done\./.test(chunk)) senderWin.webContents.send('ti:progress', 100);
+        if (/Dry run\./.test(chunk)) senderWin.webContents.send('ti:progress', 60);
+        if (/^Done\./m.test(chunk)) senderWin.webContents.send('ti:progress', 100);
     });
 
     child.stderr.on('data', chunk => {
         senderWin.webContents.send('ti:log', chunk);
     });
 
+    child.on('error', err => {
+        senderWin.webContents.send('ti:log', `Error spawning child: ${err.message}\n`);
+    });
+
     return new Promise(resolve => {
-        child.on('close', code => resolve({ code }));
+        child.on('close', (code, signal) => {
+            // if code is null, it usually means spawn error or killed by signal
+            if (code === null && signal) {
+                senderWin.webContents.send('ti:log', `Child terminated by signal: ${signal}\n`);
+            }
+            resolve({ code: code ?? -1 });
+        });
     });
 }

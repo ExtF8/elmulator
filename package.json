@@ -37,11 +37,17 @@
         "win": {
             "artifactName": "Elmulator-${version}-${arch}.${ext}",
             "target": "nsis",
+            "asar": true,
+            "asarUnpack": [
+                "tools/**",
+                "node_modules/pdf-parse/**",
+                "node_modules/pdfjs-dist/**",
+                "node_modules/node-ensure/**"
+            ],
             "electronLanguages": [
                 "en-US"
             ],
             "icon": "./images/icons/icon.ico",
-            "asar": true,
             "compression": "maximum"
         },
         "copyright": "Copyright © 2024 ${author}"
