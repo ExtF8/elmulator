@@ -138,11 +138,22 @@ app.whenReady().then(() => {
     });
 
     /**
-     * Run the TI rename script (dry-run or apply) and return a simple status object.
+     * IPC handler for running the TI Rename tool.
      *
-     * @param {Electron.IpcMainInvokeEvent} event
-     * @param {{ pdfPath: string, photosDir: string, mode: 'copy'|'inplace', apply: boolean, refDigits?: number, outDir?: string }} payload
+     * Renderer calls:  ipcRenderer.invoke('ti:run', payload)
+     *
+     * Payload fields:
+     * @param {string} pdfPath    - Absolute path to the PDF with "<NAME> TI-<REF>" lines.
+     * @param {string} photosDir  - Directory containing the FLIR/thermal images.
+     * @param {'copy'|'inplace'} mode - Whether to copy into --out (copy) or rename originals (inplace).
+     * @param {boolean} apply     - If true, actually perform renaming/copying. If false, dry-run only.
+     * @param {number} [refDigits=4] - Number of leading digits from TI refs to keep when matching.
+     * @param {string} [outDir]   - Custom output directory (used if mode==='copy').
+     *
      * @returns {Promise<{ok:boolean, code:number, error?:string}>}
+     *          - ok: true if child exited with code 0, false otherwise
+     *          - code: the child process exit code
+     *          - error: error message if process failed
      */
     ipcMain.handle('ti:run', async (event, payload) => {
         const senderWin = BrowserWindow.fromWebContents(event.sender);
@@ -159,7 +170,7 @@ app.whenReady().then(() => {
                     : ['--out', payload.outDir || path.join(payload.photosDir, 'renamed_output')]),
                 ...(payload.apply ? ['--apply'] : ['--inspect', '--showMap']),
             ];
-            const result = await runChildTool(win, {
+            const result = await runChildTool(senderWin, {
                 scriptRelPath: 'tools/renameTI.cjs',
                 args,
                 chan: 'ti',
@@ -167,6 +178,45 @@ app.whenReady().then(() => {
             return { ok: result.code === 0, code: result.code };
         } catch (err) {
             senderWin.webContents.send('ti:log', `Error: ${err?.message || String(err)}\n`);
+            return { ok: false, code: -1, error: err?.message || String(err) };
+        }
+    });
+
+    /**
+     * IPC handler for running the Issues to Excel extraction tool.
+     *
+     * Renderer calls:  ipcRenderer.invoke('issues:run', payload)
+     *
+     * Payload fields:
+     * @param {string} pdfPath    - Absolute path to the PDF with "Issue X" entries.
+     * @param {string} outXlsx    - Absolute path for the Excel file to write.
+     * @param {boolean} apply     - If true, actually write the Excel file. If false, dry-run only.
+     * @param {boolean} [inspect] - If true, print debug info about parsed issues.
+     *
+     * @returns {Promise<{ok:boolean, code:number, error?:string}>}
+     *          - ok: true if child exited with code 0, false otherwise
+     *          - code: the child process exit code
+     *          - error: error message if process failed
+     */
+    ipcMain.handle('issues:run', async (event, payload) => {
+        const senderWin = BrowserWindow.fromWebContents(event.sender);
+        try {
+            const args = [
+                '--pdf',
+                payload.pdfPath,
+                '--out',
+                payload.outXlsx,
+                ...(payload.apply ? ['--apply'] : []),
+                ...(payload.inspect ? ['--inspect'] : []),
+            ];
+            const result = await runChildTool(senderWin, {
+                scriptRelPath: 'tools/extractIssuesToExcel.cjs',
+                args,
+                chan: 'issues',
+            });
+            return { ok: result.code === 0, code: result.code };
+        } catch (err) {
+            senderWin.webContents.send('issues:log', `Error: ${err?.message || String(err)}\n`);
             return { ok: false, code: -1, error: err?.message || String(err) };
         }
     });
