@@ -1,0 +1,34 @@
+<!doctype html>
+<div class="eml-container">
+    <h2>EML</h2>
+
+    <div class="eml-inputs">
+        <!-- PDF file -->
+        <div class="eml-row">
+            <label for="eml_pdf">Choose reference PDF file</label>
+            <button type="button" id="eml_browse_pdf">Choose PDF...</button>
+            <input type="text" id="eml_pdf_path" readonly placeholder="No file selected" />
+        </div>
+
+        <!-- Output placeholder for dry-run -->
+        <div class="eml-output">
+            <label for="eml_output">Dry-run / Output</label>
+            <p id="eml_output" aria-live="polite">
+                <!-- planned outputs will appear here -->
+            </p>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="eml-progress">
+            <label for="eml_progress">Progress</label>
+            <progress id="eml_progress" value="0" max="100"></progress>
+            <span id="eml_progress_label" aria-hidden="true">0%</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="eml-actions">
+            <button id="eml_btn_rename" type="button">Rename (dry run)</button>
+            <button id="eml_btn_apply" type="button">Extract</button>
+        </div>
+    </div>
+</div>
