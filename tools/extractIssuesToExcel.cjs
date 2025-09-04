@@ -238,7 +238,7 @@ async function writeExcel(rows, outXlsx) {
  * @param {{issue: number, text: string}[]} rows
  */
 function printPlanned(rows) {
-    console.log('\nPlaned outputs:');
+    console.log('\nPlanned outputs:');
     if (!rows.length) {
         console.log('(No issues found.)');
         return;
