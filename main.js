@@ -304,11 +304,25 @@ function runChildTool(senderWin, { scriptRelPath, args, chan }) {
         `${chan}:log`,
         `[run ${chan}] script: ${scriptPath}\n[args]: ${args.join(' ')}\n`
     );
+    // Optional: also mirror to main-process console
+    console.log(`[run ${chan}] script: ${scriptPath}`);
+    console.log(`[run ${chan}] args: ${args.join(' ')}`);
 
-    // IMPORTANT: use fork + silent to capture stdio; no new Electron instance
+    // --- KEY PART: make child see node_modules in app.asar ---
+    const isPack = app.isPackaged;
+    const asarNodeModules = path.join(process.resourcesPath, 'app.asar', 'node_modules');
+
     const child = fork(scriptPath, args, {
         stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
         silent: true,
+        cwd: isPack ? process.resourcesPath : __dirname, // sensible base
+        env: {
+            ...process.env,
+            // Let Node resolve modules from the asar's node_modules in production
+            NODE_PATH: isPack ? asarNodeModules : path.join(__dirname, 'node_modules'),
+            NODE_OPTIONS: '--trace-uncaught', // optional: better stacks while debugging
+            ELECTRON_RUN_AS_NODE: '1', // safe; ensures pure node behavior
+        },
     });
 
     child.stdout.setEncoding('utf8');
@@ -317,6 +331,7 @@ function runChildTool(senderWin, { scriptRelPath, args, chan }) {
     // Forward stdout/stderr to renderer
     child.stdout.on('data', chunk => {
         senderWin.webContents.send(`${chan}:log`, chunk);
+        console.log(`[${chan} child out]`, chunk); // optional mirror
 
         // Heuristic progress signals
         if (/Planned outputs:/.test(chunk)) senderWin.webContents.send(`${chan}:progress`, 20);
@@ -325,21 +340,23 @@ function runChildTool(senderWin, { scriptRelPath, args, chan }) {
     });
 
     child.stderr.on('data', chunk => {
-        senderWin.webContents.send(`${chan}:log`, chunk);
+        senderWin.webContents.send(`${chan}:log`, `[ERR] ${chunk}`); // <-- use chan, not hard-coded 'issues'
+        console.error(`[${chan} child err]`, chunk); // optional mirror
     });
 
     child.on('error', err => {
         senderWin.webContents.send(`${chan}:log`, `Error spawning child: ${err.message}\n`);
+        console.error(`[${chan}] spawn error:`, err);
     });
 
     return new Promise(resolve => {
         child.on('close', (code, signal) => {
-            // if code is null, it usually means spawn error or killed by signal
             if (code === null && signal) {
                 senderWin.webContents.send(
                     `${chan}:log`,
                     `Child terminated by signal: ${signal}\n`
                 );
+                console.warn(`[${chan}] child terminated by signal: ${signal}`);
             }
             resolve({ code: code ?? -1 });
         });
