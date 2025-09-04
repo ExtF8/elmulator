@@ -1,56 +1,97 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 /**
- * Expose safe IPC APIs to the renderer.
+ * Subscribe to an IPC channel and return an unsubscribe function.
  *
- * Provides:
- * - run(options): invoke the TI rename script
- * - onLog(handler): subscribe to streamed log chunks
- * - onProgress(handler): subscribe to progress updates
- * - choosePdf(): open a native "open PDF" dialog
- * - chooseDir(): open a native "open directory" dialog
+ * @param {string} channel
+ * @param {(data:any) => void} handler
+ * @returns {() => void}
+ */
+function subscribe(channel, handler) {
+    const listener = (_evt, data) => handler(data);
+    ipcRenderer.on(channel, listener);
+    return () => ipcRenderer.removeListener(channel, listener);
+}
+
+/**
+ * TI: Rename Thermal Images API (window.ti)
  *
- * All functions are accessible via window.ti in the renderer.
+ * Channels used:
+ *  - invoke: 'ti:run'
+ *  - events: 'ti:log', 'ti:progress'
+ *  - dialogs: 'choose:pdf', 'choose:dir'
  */
 contextBridge.exposeInMainWorld('ti', {
     /**
-     * Invoke the rename run (dry-run or apply).
-     * @param {object} options - Payload for the run.
-     * @returns {Promise<any>} IPC result object {ok:boolean, code:number, error?:string}
+     * Invoke the TI rename tool (dry-run or apply).
+     * @param {TiRunPayload} options
+     * @returns {Promise<{ok:boolean, code:number, error?:string}>}
      */
     run: options => ipcRenderer.invoke('ti:run', options),
 
     /**
-     * Subscribe to log messages from the child process.
-     * @param {(chunk:string) => void} handler - Called with each log chunk.
-     * @returns {() => void} unsubscribe function.
+     * Subscribe to stdout/stderr log chunks from the child process.
+     * @param {(chunk:string) => void} handler
+     * @returns {() => void} unsubscribe
      */
-    onLog: handler => {
-        const listener = (_e, chunk) => handler(chunk);
-        ipcRenderer.on('ti:log', listener);
-        return () => ipcRenderer.removeListener('ti:log', listener);
-    },
+    onLog: handler => subscribe('ti:log', handler),
 
     /**
-     * Subscribe to progress updates.
-     * @param {(pct:number) => void} handler - Called with each progress value.
-     * @returns {() => void} unsubscribe function.
+     * Subscribe to coarse progress updates (0–100).
+     * @param {(pct:number) => void} handler
+     * @returns {() => void} unsubscribe
      */
-    onProgress: handler => {
-        const listener = (_e, pct) => handler(pct);
-        ipcRenderer.on('ti:progress', listener);
-        return () => ipcRenderer.removeListener('ti:progress', listener);
-    },
+    onProgress: handler => subscribe('ti:progress', handler),
 
     /**
-     * Open a native "choose PDF" dialog.
-     * @returns {Promise<string|null>} absolute path or null if canceled
+     * Open native "choose PDF" dialog.
+     * @returns {Promise<string|null>} Absolute path or null if canceled.
      */
     choosePdf: () => ipcRenderer.invoke('choose:pdf'),
 
     /**
-     * Open a native "choose directory" dialog.
-     * @returns {Promise<string|null>} absolute path or null if canceled
+     * Open native "choose directory" dialog.
+     * @returns {Promise<string|null>} Absolute path or null if canceled.
      */
     chooseDir: () => ipcRenderer.invoke('choose:dir'),
+});
+
+/**
+ * Issues → Excel Extraction API (window.issues)
+ *
+ * Channels used:
+ *  - invoke: 'issues:run'
+ *  - events: 'issues:log', 'issues:progress'
+ *  - (optional save dialog could be added as 'issues:chooseOut' if you wire it in main)
+ */
+contextBridge.exposeInMainWorld('issues', {
+    /**
+     * Run the Issues→Excel extractor (dry-run by default; pass apply:true to write).
+     * @param {IssuesRunPayload} options
+     * @returns {Promise<{ok:boolean, code:number, error?:string}>}
+     */
+    run: options => ipcRenderer.invoke('issues:run', options),
+
+    /**
+     * Subscribe to stdout/stderr log chunks from the extractor.
+     * @param {(chunk:string) => void} handler
+     * @returns {() => void} unsubscribe
+     */
+    onLog: handler => subscribe('issues:log', handler),
+
+    /**
+     * Subscribe to coarse progress updates (0–100).
+     * @param {(pct:number) => void} handler
+     * @returns {() => void} unsubscribe
+     */
+    onProgress: handler => subscribe('issues:progress', handler),
+
+    /**
+     * Open native "choose directory" dialog.
+     * @returns {Promise<string|null>} Absolute path or null if canceled.
+     */
+    choosePdf: () => ipcRenderer.invoke('choose:pdf'),
+
+    // If added a save dialog in main.js:
+    // chooseOut: () => ipcRenderer.invoke('issues:chooseOut'),
 });
