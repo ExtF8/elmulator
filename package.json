@@ -23,7 +23,8 @@
             "tools/**",
             "node_modules/pdf-parse/**",
             "node_modules/pdfjs-dist/**",
-            "node_modules/node-ensure/**"
+            "node_modules/node-ensure/**",
+            "node_modules/exceljs/**"
         ],
         "linux": {
             "icon": "./images/icons/32x32.png",
