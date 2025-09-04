@@ -101,3 +101,21 @@ This module helps ensure consistency and accuracy in naming large sets of images
      ```
 
 ---
+
+## 5. Issues to Excel Extraction
+
+### Overview
+The "Issues → Excel Extraction" module parses a PDF file and extracts the **second line of text from each page (until the sentence ends)**. Each extracted issue is then written to a cell in an Excel spreadsheet (`.xlsx`), creating a structured list of issues.
+
+### Usage Guide
+
+1. **Select a PDF File**: Pick the PDF that contains issues in the format:
+2. **Choose Mode**:
+   - **Dry Run**: Displays the list of extracted issues in the app output without writing a file.
+   - **Apply (Extract)**: Creates an Excel file (`<pdfName>.issues.xlsx`) saved in the same folder as the PDF.
+
+3. **Review Outputs**:
+   - Dry Run: Planned outputs are listed in the app window (`Issue N -> description`).
+   - Apply: Produces an Excel file containing all extracted issues in rows.
+
+---
