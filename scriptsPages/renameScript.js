@@ -91,8 +91,6 @@
 
         for (let raw of lines) {
             const line = raw.replace(/\r$/, '');
-            console.log(line);
-            console.log(raw);
 
             // Always surface errors from main/child
             if (line.startsWith('[ERR]')) {
