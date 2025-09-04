@@ -102,7 +102,7 @@ This module helps ensure consistency and accuracy in naming large sets of images
 
 ---
 
-## 5. Issues to Excel Extraction
+## 5. Issues to Excel Extraction - EML (emergency lights)
 
 ### Overview
 The "Issues → Excel Extraction" module parses a PDF file and extracts the **second line of text from each page (until the sentence ends)**. Each extracted issue is then written to a cell in an Excel spreadsheet (`.xlsx`), creating a structured list of issues.
