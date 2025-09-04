@@ -1,54 +1,51 @@
 /**
- * TI Rename renderer-side controller.
+ * Issues→Excel renderer-side controller.
  *
  * Responsibilities:
- * - Manage path selection (PDF and photos directory) via IPC-powered native dialogs.
- * - Parse streamed stdout from the CLI to render:
- *    • Dry run: "Planned outputs" block
- *    • Apply:   final multi-line "Done." summary (destination or in-place)
- * - Keep a simple in-memory cache to avoid repeated prompts.
+ * - Let the user pick a PDF (native dialog via IPC).
+ * - For DRY RUN: capture only the "Planned outputs" block and show a short hint.
+ * - For APPLY:   capture and show the final "Done." multi-line trailer.
+ * - Keep simple in-memory cache to avoid repeated dialogs.
  *
- * Expects `window.ti` (IPC bridge) to provide:
- *   - onLog(handler): subscribe to stdout/stderr chunks
- *   - onProgress(handler): subscribe to coarse progress updates
- *   - run(payload): invoke the CLI
- *   - choosePdf(): open native "open file" dialog (PDF)
- *   - chooseDir(): open native "open directory" dialog
+ * Expects `window.issues` (from preload) to provide:
+ *   - run(payload): invoke the CLI (dry-run/apply)
+ *   - onLog(handler): subscribe to streamed log chunks (stdout/stderr)
+ *   - onProgress(handler): subscribe to coarse progress updates (0–100)
+ *   - (optional) chooseOut(): if you wire a "Save As…" in main; not used here
  */
+
 (function () {
     // Constants
-    const pdfInput = document.getElementById('ti_pdf_path');
-    const photosInput = document.getElementById('ti_photos_path');
-    const btnBrowsePdf = document.getElementById('ti_browse_pdf');
-    const btnBrowseDir = document.getElementById('ti_browse_dir');
-    const out = document.getElementById('ti_output');
-    const progress = document.getElementById('ti_progress');
-    const progressLabel = document.getElementById('ti_progress_label');
-    const btnRename = document.getElementById('ti_btn_rename');
-    const btnApply = document.getElementById('ti_btn_apply');
+    const pdfInput = document.getElementById('eml_pdf_path');
+    const btnBrowsePdf = document.getElementById('eml_browse_pdf');
+    const out = document.getElementById('eml_output');
+    const progress = document.getElementById('eml_progress');
+    const progressLabel = document.getElementById('eml_progress_label');
+    const btnExtract = document.getElementById('eml_btn_extract'); // dry run
+    const btnApply = document.getElementById('eml_btn_apply'); // apply (extract)
 
     /** Cached absolute path to the selected PDF (or null). */
     let cachedPdfPath = null;
-    /** Cached absolute path to the selected photos directory (or null). */
-    let cachedPhotosDir = null;
-    /** Guard to prevent concurrent PDF dialogs. */
-    let pickingPdf = false;
-    /** Guard to prevent concurrent directory dialogs. */
-    let pickingDir = false;
 
     /** Whether current run is Apply (true) or Dry run (false). */
     let isApplyRun = false;
+
     /** Carries partial line between chunk boundaries. */
     let buffer = '';
+
     /** Whether we are currently collecting "Planned outputs:" lines. */
     let collectingPlan = false;
-    /** Accumulator for planned outputs bullets (or no-matches line). */
+
+    /** Accumulator for planned outputs bullets (or a single “no items” line). */
     let planned = [];
+
     /** Whether the UI has already rendered the final output for this run. */
     let rendered = false;
+
     /** Whether we are currently collecting the multi-line "Done." block. */
     let collectingDone = false;
-    /** Accumulator for "Done." lines (first line is "Done."). */
+
+    /** Accumulator for "Done." lines (first line must be "Done."). */
     let doneLines = [];
 
     /**
@@ -59,6 +56,19 @@
         const v = Math.max(0, Math.min(100, Number(pct) || 0));
         progress.value = v;
         progressLabel.textContent = v + '%';
+    }
+
+    /**
+     * Compute a default .xlsx output path “next to” the PDF.
+     * Falls back to "<pdfPath>.issues.xlsx" if extension isn’t ".pdf".
+     * NOTE: string-based to keep renderer sandboxed (no Node path).
+     * @param {string} pdfPath
+     * @returns {string}
+     */
+    function defaultOutPathBesidePdf(pdfPath) {
+        if (!pdfPath) return 'issues.xlsx';
+        // Replace trailing ".pdf" (case-insensitive) with ".issues.xlsx"; otherwise append.
+        return pdfPath.replace(/\.pdf$/i, '.issues.xlsx') + (/\.pdf$/i.test(pdfPath) ? '' : ''); // no-op, just clarity
     }
 
     /**
@@ -82,31 +92,34 @@
      * - Dry run: captures only the "Planned outputs" block and prints a short hint.
      * - Apply:   captures the multi-line "Done." block and renders it incrementally.
      */
-    const offLog = window.ti.onLog(chunk => {
+    const offLog = window.issues.onLog(chunk => {
         if (rendered) return;
 
         buffer += chunk;
         const lines = buffer.split('\n');
-        buffer = lines.pop() ?? '';
+        buffer = lines.pop() ?? ''; // keep the last partial line
 
         for (let raw of lines) {
             const line = raw.replace(/\r$/, '');
 
-            // Always surface errors from main/child
+            // Always surface obvious error lines (if any policy prints them)
             if (line.startsWith('[ERR]')) {
                 out.textContent = (out.textContent ? out.textContent + '\n' : '') + line;
                 continue;
             }
 
+            //  APPLY: “Done.” trailer
             if (isApplyRun) {
+                // Start collecting when we hit the first “Done.” line.
                 if (!collectingDone) {
                     if (/^Done\./.test(line)) {
                         collectingDone = true;
                         doneLines = [line];
-                        out.textContent = doneLines.join('\n');
+                        out.textContent = doneLines.join('\n'); // show immediately
                     }
                     continue;
                 }
+                // Already collecting the “Done.” block
                 if (line.trim() === '') {
                     rendered = true;
                     setProgress(100);
@@ -114,11 +127,12 @@
                     return;
                 } else {
                     doneLines.push(line);
-                    out.textContent = doneLines.join('\n');
+                    out.textContent = doneLines.join('\n'); // live update while lines stream in
                 }
                 continue;
             }
 
+            //  DRY RUN: planned outputs
             if (!collectingPlan) {
                 if (line.includes('Planned outputs:')) {
                     collectingPlan = true;
@@ -127,20 +141,21 @@
                 continue;
             }
 
+            // Inside the planned outputs block
             if (/^\s*-\s+/.test(line)) {
-                planned.push(line.trim());
+                planned.push(`<span class="issue-line">${line.trim()}</span>`);
+
                 continue;
             }
-            if (line.trim().startsWith('(No photos matched')) {
+            if (line.trim().startsWith('(No issues found')) {
                 planned = [line.trim()];
                 continue;
             }
 
+            // Stop collecting on blank line or the dry-run trailer
             if (line.trim() === '' || /^Dry run\./.test(line)) {
-                const body = planned.length
-                    ? planned.join('\n')
-                    : '(No photos matched any reference from the PDF. Check --refDigits or filenames.)';
-                out.textContent = `Planned outputs:\n${body}\n\nDry run. Press Apply to write files to disk.`;
+                const body = planned.length ? planned.join('\n') : '(No issues found.)';
+                out.innerHTML = `Planned outputs:\n${body}\n\nDry run. Press Extract to write rows to Excel.`;
                 rendered = true;
                 setProgress(60);
                 return;
@@ -151,88 +166,68 @@
     /**
      * Progress handler passthrough for coarse updates from main/child process.
      */
-    const offProg = window.ti.onProgress(pct => setProgress(pct));
+    const offProg = window.issues.onProgress(pct => setProgress(pct));
 
     /**
      * Open native "choose PDF" dialog, cache the selection, and reflect it in the input.
      * Guarded to prevent dialog overlap.
      */
     btnBrowsePdf.addEventListener('click', async () => {
-        if (pickingPdf) return;
-        pickingPdf = true;
-        try {
-            const chosen = await window.ti.choosePdf();
-            if (chosen) {
-                cachedPdfPath = chosen;
-                pdfInput.value = chosen;
-            }
-        } finally {
-            pickingPdf = false;
-        }
-    });
-
-    /**
-     * Open native "choose directory" dialog, cache the selection, and reflect it in the input.
-     * Guarded to prevent dialog overlap.
-     */
-    btnBrowseDir.addEventListener('click', async () => {
-        if (pickingDir) return;
-        pickingDir = true;
-        try {
-            const dir = await window.ti.chooseDir();
-            if (dir) {
-                cachedPhotosDir = dir;
-                photosInput.value = dir;
-            }
-        } finally {
-            pickingDir = false;
+        // You can add a "picking" guard if double-clicks are a problem; usually fine without.
+        const pdfPath = await window.issues.choosePdf(); // prefer ti.choosePdf if already wired
+        if (pdfPath) {
+            cachedPdfPath = pdfPath;
+            pdfInput.value = pdfPath;
         }
     });
 
     /**
      * Execute either a Dry run or an Apply run:
-     * - Validates that both paths are selected.
+     * - Validates that the PDF path is selected.
      * - Resets UI state and invokes the CLI through IPC.
      * - Finalizes output if the process ends without a trailing newline.
      * @param {{apply: boolean}} param0
      */
-    async function runTi({ apply }) {
+    async function runIssues({ apply }) {
         resetParseState(apply);
 
         const pdfPath = cachedPdfPath;
-        const photosDir = cachedPhotosDir;
-
-        if (!pdfPath || !photosDir) {
-            out.textContent = 'Please select both a PDF file and a photos folder.';
+        if (!pdfPath) {
+            out.textContent = 'Please select a PDF file first.';
             return;
         }
 
-        const mode = document.querySelector('input[name="ti_mode"]:checked')?.value || 'copy';
-        const payload = { pdfPath, photosDir, mode, apply: !!apply, refDigits: 4 };
+        const outXlsx = defaultOutPathBesidePdf(pdfPath);
+        const payload = {
+            pdfPath,
+            outXlsx,
+            apply: !!apply,
+            inspect: false, // set true to get extra parser prints in console
+        };
 
-        const { ok, code, error } = await window.ti.run(payload);
+        const { ok, code, error } = await window.issues.run(payload);
         if (!ok) {
             out.textContent = `Process exited with code ${code}${error ? `: ${error}` : ''}`;
             return;
         }
 
+        // If logs ended without a trailing newline or our stop conditions, finalize gracefully
         if (!rendered && isApplyRun && collectingDone) {
             if (buffer.trim()) doneLines.push(buffer.replace(/\r$/, ''));
             out.textContent = doneLines.join('\n');
             setProgress(100);
             rendered = true;
         } else if (!rendered && !isApplyRun && collectingPlan) {
-            const body = planned.length
-                ? planned.join('\n')
-                : '(No photos matched any reference from the PDF. Check --refDigits or filenames.)';
-            out.textContent = `Planned outputs:\n${body}\n\nDry run. Press Apply to write files to disk.`;
+            const body = planned.length ? planned.join('\n') : '(No issues found.)';
+            out.textContent = `Planned outputs:\n${body}\n\nDry run. Press Extract to write rows to Excel.`;
             setProgress(60);
             rendered = true;
         }
     }
 
-    btnRename.addEventListener('click', () => runTi({ apply: false }));
-    btnApply.addEventListener('click', () => runTi({ apply: true }));
+    // Actions
+    btnExtract.addEventListener('click', () => runIssues({ apply: false })); // dry run
+    btnApply.addEventListener('click', () => runIssues({ apply: true })); // apply
 
     /**
      * Detach IPC listeners when the page is being unloaded.

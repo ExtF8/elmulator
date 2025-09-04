@@ -22,8 +22,8 @@
         "asarUnpack": [
             "tools/**",
             "node_modules/pdf-parse/**",
-            "node_modules/pdfjs-dist/**",
-            "node_modules/node-ensure/**"
+            "node_modules/node-ensure/**",
+            "node_modules/exceljs/**"
         ],
         "linux": {
             "icon": "./images/icons/32x32.png",
@@ -63,6 +63,7 @@
         "@electron/packager": "^18.3.2",
         "electron-log": "^5.4.1",
         "electron-updater": "^6.6.2",
+        "exceljs": "^4.4.0",
         "pdf-parse": "^1.1.1"
     }
 }
