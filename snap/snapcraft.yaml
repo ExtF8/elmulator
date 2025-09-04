@@ -14,6 +14,12 @@ description: |
   Module for Calculating Circuit Count:
   Streamline the distribution of circuit work among engineers by inputting the number of engineers and circuits, and the app calculates the optimal distribution for single-phase and three-phase circuits.
 
+  TI Rename Tool:
+  Automate renaming of thermal imaging photos by matching <NAME> TI-<REF> lines from a PDF with photo filenames, supporting both dry-run previews and apply mode for in-place renaming or copying to an output folder.
+
+  Issues to Excel Extraction - EML (emergency lights):
+  Extract issue descriptions from a PDF by parsing the second line of each page, preview planned outputs in dry-run mode, and generate an Excel file with all issues when applying.
+
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
 
