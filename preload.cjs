@@ -2,7 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 /**
  * Subscribe to an IPC channel and return an unsubscribe function.
- * 
+ *
  * @param {string} channel
  * @param {(data:any) => void} handler
  * @returns {() => void}
@@ -86,6 +86,12 @@ contextBridge.exposeInMainWorld('issues', {
      */
     onProgress: handler => subscribe('issues:progress', handler),
 
-    // If you add a save dialog in main.js:
+    /**
+     * Open native "choose directory" dialog.
+     * @returns {Promise<string|null>} Absolute path or null if canceled.
+     */
+    choosePdf: () => ipcRenderer.invoke('choose:pdf'),
+
+    // If added a save dialog in main.js:
     // chooseOut: () => ipcRenderer.invoke('issues:chooseOut'),
 });
