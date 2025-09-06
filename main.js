@@ -2,12 +2,7 @@
  * Module for Electron Main Process Management
  */
 
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
-const path = require('path');
-const { autoUpdater } = require('electron-updater');
-const log = require('electron-log');
-const fs = require('fs');
-
+const { app, BrowserWindow } = require('electron');
 const { createMainWindow } = require('./window/createMainWindow');
 const { setupMainMenu } = require('./menu/menu');
 const { registerIcpHandlers } = require('./ipc');
@@ -53,6 +48,10 @@ let mainWindow;
  * Some APIs can only be used after this event occurs.
  */
 app.whenReady().then(() => {
+    // Start auto updater
+    if (process.platform === 'win32' || 'darwin') {
+        startAutoUpdate(mainWindow);
+    }
     // Build the Main Window
     mainWindow = createMainWindow();
 
@@ -61,10 +60,6 @@ app.whenReady().then(() => {
 
     // Register IPC handlers
     registerIcpHandlers({ dialogs, childRunner });
-
-    if (process.platform === 'win32' || 'darwin') {
-        startAutoUpdate(mainWindow);
-    }
 
     app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
