@@ -155,7 +155,7 @@
             // Stop collecting on blank line or the dry-run trailer
             if (line.trim() === '' || /^Dry run\./.test(line)) {
                 const body = planned.length ? planned.join('\n') : '(No issues found.)';
-                out.innerHTML = `Planned outputs:\n${body}\n\nDry run. Press Extract to write rows to Excel.`;
+                out.innerHTML = `Planned outputs:\n${body}\n\nDry run. Press Apply to write rows to Excel.`;
                 rendered = true;
                 setProgress(60);
                 return;
