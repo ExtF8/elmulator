@@ -61,40 +61,9 @@ app.whenReady().then(() => {
     // Build the application menu.
     setupMainMenu();
 
-    /**
-     * Open a native file picker for a single PDF.
-     *
-     * Uses the sender's BrowserWindow as the parent so the dialog stays on top
-     * and is modal relative to your app window.
-     *
-     * @returns {Promise<string|null>} Absolute path to the selected PDF, or null if canceled.
-     */
-    ipcMain.handle('choose:pdf', async event => {
-        const parent = BrowserWindow.fromWebContents(event.sender);
-        const { canceled, filePaths } = await dialog.showOpenDialog(parent, {
-            properties: ['openFile'],
-            filters: [{ name: 'PDF', extensions: ['pdf'] }],
-            title: 'Select PDF',
-        });
-        return canceled ? null : filePaths[0];
-    });
 
-    /**
-     * Open a native directory picker for the photos folder.
-     *
-     * Uses the sender's BrowserWindow as the parent so the dialog stays on top
-     * and is modal relative to your app window.
-     *
-     * @returns {Promise<string|null>} Absolute path to the selected directory, or null if canceled.
-     */
-    ipcMain.handle('choose:dir', async event => {
-        const parent = BrowserWindow.fromWebContents(event.sender);
-        const { canceled, filePaths } = await dialog.showOpenDialog(parent, {
-            properties: ['openDirectory'],
-            title: 'Select Photos Folder',
-        });
-        return canceled ? null : filePaths[0];
-    });
+
+
 
     /**
      * IPC handler for running the TI Rename tool.
@@ -118,7 +87,7 @@ app.whenReady().then(() => {
         const senderWin = BrowserWindow.fromWebContents(event.sender);
         try {
             const args = [
-                '--pdf',
+                '--pdf',    
                 payload.pdfPath,
                 '--photos',
                 payload.photosDir,
