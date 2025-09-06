@@ -28,12 +28,12 @@ function getPreloadPath() {
 function getToolPath(rel) {
     // In production, files under asar must be unpacked to run via Node
     const base = isPackaged()
-        ? path.join(getResourcesBase, 'app.asar.unpacked')
-        : path.join(__dirname, '..');
+        ? path.join(getResourcesBase(), 'app.asar.unpacked')
+        : path.join(__dirname, '..', '..');
     return path.join(base, rel);
 }
 
-function getAsarNodeModulesPath(params) {
+function getAsarNodeModulesPath() {
     // Dependencies in packaged app
     return path.join(getResourcesBase(), 'app.asar', 'node_modules');
 }

@@ -47,13 +47,13 @@ function runTool(senderWin, { scriptRelPath, args, chan }) {
     const child = fork(scriptPath, args, {
         stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
         silent: true,
-        cwd: isPackaged() ? getResourcesBase : path.join(__dirname, '..', '..'), // sensible base
+        cwd: isPackaged() ? getResourcesBase() : path.join(__dirname, '..'), // sensible base
         env: {
             ...process.env,
             // Let Node resolve modules from the asar's node_modules in production
             NODE_PATH: isPackaged()
                 ? getAsarNodeModulesPath()
-                : path.join(__dirname, '..', '..', 'node_modules'),
+                : path.join(__dirname, '..', 'node_modules'),
             NODE_OPTIONS: '--trace-uncaught', // optional: better stacks while debugging
             ELECTRON_RUN_AS_NODE: '1', // safe; ensures pure node behavior
         },
