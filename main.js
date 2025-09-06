@@ -10,6 +10,9 @@ const fs = require('fs');
 
 const { createMainWindow } = require('./window/createMainWindow');
 const { setupMainMenu } = require('./menu/menu');
+const { registerIcpHandlers } = require('./ipc');
+const dialogs  = require('./services/dialogs');
+const childRunner = require('./services/childRunner');
 
 // --- Single-instance lock (prevents second instance on Windows) ---
 const gotLock = app.requestSingleInstanceLock();
@@ -59,6 +62,8 @@ app.whenReady().then(() => {
     // Build the application menu.
     setupMainMenu();
 
+    // Register IPC handlers
+    registerIcpHandlers({ dialogs, childRunner });
 
     app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
@@ -114,5 +119,3 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, name) => {
         autoUpdater.quitAndInstall(false, true);
     }
 });
-
-
