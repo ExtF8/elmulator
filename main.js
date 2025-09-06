@@ -9,6 +9,8 @@ const log = require('electron-log');
 const fs = require('fs');
 
 const { fork } = require('child_process');
+
+const { createMainWindow } = require('./window/createMainWindow');
 const { setupMainMenu } = require('./menu/menu');
 
 // --- Single-instance lock (prevents second instance on Windows) ---
@@ -23,20 +25,6 @@ if (!gotLock) {
             win.focus();
         }
     });
-}
-
-/**
- * Resolve a tool path depending on whether app is packaged or running in dev.
- * - In dev: tools live under __dirname
- * - In prod: must be unpacked from asar into app.asar.unpacked
- *
- * @param {string} rel - relative path to tool
- * @returns {string} absolute path to tool
- */
-function getToolPath(rel) {
-    // In production, files under asar must be unpacked to run via Node
-    const base = app.isPackaged ? path.join(process.resourcesPath, 'app.asar.unpacked') : __dirname;
-    return path.join(base, rel);
 }
 
 // ENV for Hot Reloading in the development environment.
@@ -61,46 +49,17 @@ if (env === 'development') {
 
 let mainWindow;
 
-// Constants
-const DEFAULT_WINDOW_DIMENSIONS = {
-    width: 340,
-    height: 660,
-};
-const ICON_PATH = path.join(__dirname, '/images/icons/icon.ico');
-const PRELOAD_SCRIPT_PATH = path.join(__dirname, 'preload.cjs');
-
-/**
- * Crates the main application window with the application menu
- */
-const createWindow = () => {
-    mainWindow = new BrowserWindow({
-        icon: ICON_PATH,
-        width: DEFAULT_WINDOW_DIMENSIONS.width,
-        height: DEFAULT_WINDOW_DIMENSIONS.height,
-        webPreferences: {
-            preload: PRELOAD_SCRIPT_PATH,
-            contextIsolation: true,
-            nodeIntegration: false,
-        },
-        alwaysOnTop: true,
-    });
-
-    mainWindow.loadFile('index.html');
-
-    // Build the application menu.
-    setupMainMenu();
-
-    // Uncomment to open the DevTools by default.
-    // mainWindow.webContents.openDevTools();
-};
-
 /**
  * This method will be called when Electron has finished
  * initialization and is ready to create browser windows.
  * Some APIs can only be used after this event occurs.
  */
 app.whenReady().then(() => {
-    createWindow();
+    // Build the Main Window
+    mainWindow = createMainWindow();
+
+    // Build the application menu.
+    setupMainMenu();
 
     /**
      * Open a native file picker for a single PDF.
