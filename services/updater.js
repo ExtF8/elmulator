@@ -30,7 +30,7 @@ function startAutoUpdate(mainWindow) {
         if (response === 0) autoUpdater.quitAndInstall(false, true);
     });
 
-    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdates();
 }
 
 module.exports = { startAutoUpdate };
