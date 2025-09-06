@@ -4,6 +4,9 @@
 const { BrowserWindow } = require('electron');
 const path = require('path');
 
+/**
+ * @param {{childRunner: {runTool: Function}}} deps
+ */
 function registerRenameTiIpc({ childRunner }) {
     const { runTool } = childRunner;
 
