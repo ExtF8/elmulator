@@ -223,8 +223,36 @@ async function writeExcel(rows, outXlsx) {
     const worksheet = workbook.addWorksheet('Issues');
 
     worksheet.columns = [
-        { header: 'Issues', key: 'issue', width: 10 },
-        { header: 'Text', key: 'text', width: 100 },
+        {
+            header: 'Issues',
+            key: 'issue',
+            with: 10,
+            style: {
+                font: {
+                    name: 'Verdana',
+                    size: 12,
+                },
+                alignment: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                },
+            },
+        },
+        {
+            header: 'Text',
+            key: 'text',
+            width: 100,
+            style: {
+                font: {
+                    name: 'Verdana',
+                    size: 12,
+                },
+                alignment: {
+                    vertical: 'top',
+                    horizontal: 'left',
+                },
+            },
+        },
     ];
 
     rows.forEach(row => worksheet.addRow({ issue: row.issue, text: row.text || '' }));
