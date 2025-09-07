@@ -29,7 +29,7 @@ function getToolPath(rel) {
     // In production, files under asar must be unpacked to run via Node
     const base = isPackaged()
         ? path.join(getResourcesBase(), 'app.asar.unpacked')
-        : path.join(__dirname, '..', '..');
+        : path.join(__dirname, '..');
     return path.join(base, rel);
 }
 
