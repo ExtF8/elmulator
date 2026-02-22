@@ -1,6 +1,6 @@
 {
     "name": "elmulator",
-    "version": "2.4.1",
+    "version": "2.4.2",
     "description": "calculator for Elmar",
     "author": "ExtF8",
     "main": "main.js",
@@ -47,7 +47,7 @@
             "icon": "./images/icons/icon.ico",
             "compression": "maximum"
         },
-        "copyright": "Copyright © 2024 ${author}"
+        "copyright": "Copyright © 2025 ${author}"
     },
     "license": "MIT",
     "devDependencies": {
