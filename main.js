@@ -2,7 +2,7 @@
  * Module for Electron Main Process Management
  */
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, net } = require('electron');
 const { createMainWindow } = require('./window/createMainWindow');
 const { setupMainMenu } = require('./menu/menu');
 const { registerIcpHandlers } = require('./ipc');
@@ -49,7 +49,7 @@ let mainWindow;
  */
 app.whenReady().then(() => {
     // Start auto updater
-    if (process.platform === 'win32' || 'darwin') {
+    if ((process.platform === 'win32' || process.platform === 'darwin') && net.isOnline()) {
         startAutoUpdate(mainWindow);
     }
     // Build the Main Window
