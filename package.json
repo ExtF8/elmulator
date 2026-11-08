@@ -4,6 +4,7 @@
     "description": "calculator for Elmar",
     "author": "ExtF8",
     "main": "main.js",
+    "desktopName": "com.extfield8.elmulator.desktop",
     "publish": [
         {
             "provider": "github",
@@ -30,13 +31,14 @@
             ],
             "electronLanguages": [
                 "en-US"
-            ]
+            ],
+            "syncDesktopName": true
         },
-        "snap": {
-            "confinement": "strict",
-            "summary": "Calculator for Elmar",
-            "grade": "stable",
-            "base": "core20"
+        "snapcraft": {
+            "base": "core24",
+            "core24": {
+                "confinement": "strict"
+            }
         },
         "win": {
             "artifactName": "Elmulator-${version}-${arch}.${ext}",
@@ -52,7 +54,7 @@
     "license": "MIT",
     "devDependencies": {
         "electron": "^44.9.1",
-        "electron-builder": "^26.8.1",
+        "electron-builder": "^26.15.7",
         "electron-reloader": "^1.2.3"
     },
     "dependencies": {
